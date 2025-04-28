@@ -1,5 +1,5 @@
 # SSAFY_HOME_FINAL_LEEHEEGYEONG_JUNGYEONSU
-
+safeRent
 
 
 ## Getting started
