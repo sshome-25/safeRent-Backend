@@ -1,12 +1,3 @@
----
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
-
----
-
 🚀 기능 설명 (Feature Description)
 간략한 설명
 <!-- 이 기능이 무엇인지 간략하게 설명해주세요 -->
