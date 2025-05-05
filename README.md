@@ -5,11 +5,12 @@
 3. 초기 세팅
     ```
         1. github 기준 clone
-        2. git remote add <gitlab url>
+        2. git remote add gitlab <gitlab url>
     ```
 4. github의 main에 최신의 코드가 모두 머지되면, 이를 gitlab master로 넘깁니다.
     ```
-        git merge origin/master --allow-unrelated-histories  
+        git checkout master
+        git merge origin/main --allow-unrelated-histories  
     ```
 # SSAFY_HOME_FINAL_LEEHEEGYEONG_JUNGYEONSU
 safeRent
