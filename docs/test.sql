@@ -63,7 +63,7 @@ FROM
 LIMIT 95;
 
 -- 진단용 집 정보 삽입
-INSERT INTO assessment_houses (location, price, market_price, area, floor, sggCd, umdNm, jibun, cityNm, aptNm, aptDong)
+INSERT INTO assessment_houses (location, price, market_price, area, floor, sggCd, umdNm, jibun, cityNm, aptNm, aptDong, risk_degree)
 SELECT 
     POINT(126.5 + RAND() * 1, 37.4 + RAND() * 0.3), -- 서울 지역 대략적인 좌표 범위
     30000 + CEILING(RAND() * 100000), -- 3억~13억원 (만원 단위)
@@ -75,7 +75,8 @@ SELECT
     CONCAT(CEILING(RAND() * 999), '-', CEILING(RAND() * 99)), -- 임의의 지번
     '서울시', -- 도시명
     ELT(CEILING(RAND() * 10), '푸른아파트', '한강뷰', '스카이타워', '그랜드빌', '파크힐스', '시티뷰', '리버사이드', '센트럴파크', '골든게이트', '로얄팰리스'), -- 임의의 아파트 이름
-    CONCAT(CHAR(65 + CEILING(RAND() * 10) - 1), '동') -- A~J동
+    CONCAT(CHAR(65 + CEILING(RAND() * 10) - 1), '동'), -- A~J동
+    0
 FROM 
     INFORMATION_SCHEMA.TABLES A,
     INFORMATION_SCHEMA.TABLES B
