@@ -101,13 +101,11 @@ CREATE TABLE `contracts` (
 
 CREATE TABLE `analysis` (
 	`analysis_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분석 id',
-	`user_id`	BIGINT	NOT NULL COMMENT 'user id',
 	`summary`	TEXT	NOT NULL COMMENT '분석 내용 요약',
 	`warnings`	INTEGER	NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
-	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '분석 활성 상태',
-    CONSTRAINT `fk_analysis_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '분석 활성 상태'
 );
 
 CREATE TABLE `assessments` (
