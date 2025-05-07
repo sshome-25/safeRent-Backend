@@ -23,31 +23,31 @@ DROP TABLE IF EXISTS parks;
 
 
 CREATE TABLE `roles` (
-	`role_id`	INT	NOT NULL PRIMARY KEY COMMENT '권한 id',
+	`role_id` TINYINT NOT NULL PRIMARY KEY COMMENT '권한 id',
 	`name`	varchar(255)	NOT NULL COMMENT '권한 이름'
 );
 
 CREATE TABLE `users` (
 	`user_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '유저 id',
-	`email`	varchar(255) NOT NULL COMMENT '유저 이메일',
-	`password`	varchar(255) NOT NULL COMMENT '유저 비밀번호',
+	`email`	varchar(255) UNIQUE NOT NULL COMMENT '유저 이메일',
+	`password`	varchar(255) NOT NULL COMMENT '유저 비밀번호, SHA 해싱',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
 	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '유저 활성 상태',
-	`nickname`	varchar(255)	NOT NULL COMMENT '유저 닉네임',
-	`role_id`	INT	NOT NULL COMMENT '유저 권한',
+	`nickname`	varchar(255) UNIQUE NOT NULL COMMENT '유저 닉네임',
+	`role_id`	TINYINT	NOT NULL COMMENT '유저 권한',
     CONSTRAINT `fk_users_roles` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE `traded_houses` (
 	`traded_house_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
 	`location`	POINT	NOT NULL COMMENT '위치',
-	`area`	DECIMAL(6,3)	NOT NULL COMMENT '평수',
-	`floor`	INT	NOT NULL COMMENT '층수',
-	`built_year`	INT	NOT NULL COMMENT '준공 년',
+	`area`	DECIMAL(6,3) UNSIGNED NOT NULL COMMENT '평수',
+	`floor`	TINYINT UNSIGNED	NOT NULL COMMENT '층수',
+	`built_year`	SMALLINT UNSIGNED	NOT NULL COMMENT '준공 년',
 	`transaction_date`	Date	NOT NULL COMMENT '거래일자',
-	`price`	BIGINT	NOT NULL COMMENT '가격',
-  `sggCd`	VARCHAR(255)	NOT NULL COMMENT '지역코드',
+	`price`	INT UNSIGNED NOT NULL COMMENT '가격 (만원 단위)',
+	`sggCd`	VARCHAR(255)	NOT NULL COMMENT '지역코드',
 	`umdNm`	VARCHAR(255)	NOT NULL COMMENT '법정동',
 	`jibun`	VARCHAR(255)	NOT NULL COMMENT '지번',
 	`cityNm`	VARCHAR(255)	NOT NULL COMMENT '시군구',
@@ -61,16 +61,17 @@ CREATE TABLE `posts` (
 	`traded_house_id`	BIGINT	NULL COMMENT '게시글 house_id',
 	`title`	varchar(255)	NOT NULL COMMENT '제목',
 	`content`	text NOT NULL COMMENT '본문',
-	`view_count`	INT	NOT NULL	COMMENT '조회수',
+	`view_count` INTEGER UNSIGNED NOT NULL	COMMENT '조회수',
 	`prefer_location`	VARCHAR(255)	NOT NULL COMMENT '선호 위치 법정동', 
-	`prefer_room_num`	INT	NOT NULL COMMENT '선호 방 개수',
-	`prefer_area`	INT	NOT NULL COMMENT '선호 면적',
+	`prefer_room_num`	TINYINT UNSIGNED NOT NULL COMMENT '선호 방 개수',
+	`prefer_area`	DECIMAL(6,3) UNSIGNED	NOT NULL COMMENT '선호 면적',
 	`parking`	BOOLEAN	NOT NULL COMMENT '주차장 여부',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
 	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '게시글 활성 상태',
     CONSTRAINT `fk_posts_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk_posts_houses` FOREIGN KEY (`traded_house_id`) REFERENCES `traded_houses`(`traded_house_id`) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT `fk_posts_houses` FOREIGN KEY (`traded_house_id`) REFERENCES `traded_houses`(`traded_house_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `chk_view_positive` CHECK (`view_count` > 0)
 );
 
 CREATE TABLE `comments` (
@@ -103,7 +104,7 @@ CREATE TABLE `favorites` (
 CREATE TABLE `analysis` (
 	`analysis_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분석 id',
 	`summary`	TEXT	NOT NULL COMMENT '분석 내용 요약',
-	`warnings`	INT	NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
+	`risk_degree`	TINYINT UNSIGNED NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '분석 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '분석 수정시간',
 	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '분석 활성 상태'
@@ -128,10 +129,10 @@ CREATE TABLE `contract_file_paths` (
 CREATE TABLE `assessment_houses` (
 	`assessment_house_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
 	`location`	Point	NOT NULL COMMENT '위치',
-	`price`	BIGINT	NOT NULL COMMENT '사용자 매매가',
-	`market_price`	BIGINT	NOT NULL COMMENT '근처 시세',
-	`area`	DECIMAL(6,3)	NOT NULL COMMENT '평수',
-	`floor`	INT	NOT NULL COMMENT '층수',
+	`price`	INT UNSIGNED NOT NULL COMMENT '사용자 매매가 (만원 단위)',
+	`market_price`	INT UNSIGNED NOT NULL COMMENT '근처 시세',
+	`area`	DECIMAL(6,3) UNSIGNED NOT NULL COMMENT '평수',
+	`floor`	TINYINT UNSIGNED	NOT NULL COMMENT '층수',
 	`sggCd`	VARCHAR(255)	NOT NULL COMMENT '지역코드',
 	`umdNm`	VARCHAR(255)	NOT NULL COMMENT '법정동',
 	`jibun`	VARCHAR(255)	NOT NULL COMMENT '지번',
@@ -157,26 +158,23 @@ CREATE TABLE `register_file_paths` (
 	`file_path`	VARCHAR(255)	NOT NULL,
 	`register_id`	BIGINT	NOT NULL,
     CONSTRAINT `fk_register_file_path_registers` FOREIGN KEY (`register_id`) REFERENCES `registers`(`register_id`) ON DELETE CASCADE ON UPDATE CASCADE
-
 );
 
 CREATE TABLE `assessments` (
 	`assessment_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '진단서 id',
-	`completness`	INT	NOT NULL COMMENT '진단 진행도',
+	`completeness`	TINYINT UNSIGNED NOT NULL COMMENT '진단 진행도',
 	`user_id`	BIGINT	NOT NULL COMMENT '유저 id',
-	`contracts_id`	BIGINT	NOT NULL COMMENT '계약서 id',
+	`contract_id`	BIGINT	NOT NULL COMMENT '계약서 id',
 	`register_id`	BIGINT	NOT NULL COMMENT '등본 id',
     `assessment_house_id`	BIGINT	NOT NULL COMMENT '진단 집 id',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
 	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태',
     CONSTRAINT `fk_assessments_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk_assessments_contracts` FOREIGN KEY (`contracts_id`) REFERENCES `contracts`(`contract_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_assessments_contracts` FOREIGN KEY (`contract_id`) REFERENCES `contracts`(`contract_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_assessments_registers` FOREIGN KEY (`register_id`) REFERENCES `registers`(`register_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_assessments_assessment_houses` FOREIGN KEY (`assessment_house_id`) REFERENCES `assessment_houses`(`assessment_house_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-
 
 CREATE TABLE `hospitals` (
 	`hospital_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -207,4 +205,3 @@ CREATE TABLE `parks` (
 	`location`	POINT	NOT NULL COMMENT '위치',
 	`name`	varchar(255)	NOT NULL COMMENT '이름'
 );
-
