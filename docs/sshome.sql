@@ -1,6 +1,22 @@
 create database if not exists sshome;
 use sshome;
 
+DROP TABLE IF EXISTS assessments;
+DROP TABLE IF EXISTS favorites;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS contracts;
+DROP TABLE IF EXISTS registers;
+DROP TABLE IF EXISTS analysis;
+DROP TABLE IF EXISTS houses;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS hospitals;
+DROP TABLE IF EXISTS stations;
+DROP TABLE IF EXISTS schools;
+DROP TABLE IF EXISTS stores;
+DROP TABLE IF EXISTS parks;
+
 CREATE TABLE `roles` (
 	`role_id`	INTEGER	NOT NULL PRIMARY KEY COMMENT '권한 id',
 	`name`	varchar(255)	NOT NULL COMMENT '권한 이름'
@@ -18,15 +34,20 @@ CREATE TABLE `users` (
     CONSTRAINT `fk_users_roles` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-CREATE TABLE `favorites` (
-	`favorite_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '즐겨찾기 id', 
-	`user_id`	BIGINT	NOT NULL COMMENT '즐겨찾기 유저',
-	`house_id`	BIGINT	NOT NULL COMMENT '즐겨 찾기 id',
-	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
-	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
-	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '즐겨찾기 활성상태',
-    CONSTRAINT `fk_favorites_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk_favorites_houses` FOREIGN KEY (`house_id`) REFERENCES `houses`(`house_id`) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE `traded_houses` (
+	`house_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
+	`location`	POINT	NOT NULL COMMENT '위치',
+	`area`	DECIMAL(6,3)	NOT NULL COMMENT '평수',
+	`floor`	INT	NOT NULL COMMENT '층수',
+	`built_year`	INT	NOT NULL COMMENT '준공 년',
+	`transaction_date`	Date	NOT NULL COMMENT '거래일자',
+	`price`	BIGINT	NOT NULL COMMENT '가격',
+    `sggCd`	VARCHAR(255)	NOT NULL COMMENT '지역코드',
+	`umdNm`	VARCHAR(255)	NOT NULL COMMENT '법정동',
+	`jibun`	VARCHAR(255)	NOT NULL COMMENT '지번',
+	`cityNm`	VARCHAR(255)	NOT NULL COMMENT '시군구',
+	`aptNm`	VARCHAR(255)	NOT NULL COMMENT '아파트 단지명',
+	`aptDong`	VARCHAR(255)	NOT NULL COMMENT '아파트 동'
 );
 
 CREATE TABLE `posts` (
@@ -63,28 +84,24 @@ CREATE TABLE `comments` (
     CONSTRAINT `fk_comments_houses` FOREIGN KEY (`house_id`) REFERENCES `houses`(`house_id`) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE `houses` (
-	`house_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
-	`address`	VARCHAR(255)	NOT NULL COMMENT '법정동 주소',
-	`location`	POINT	NOT NULL COMMENT '위치',
-	`area`	DECIMAL(5,2)	NOT NULL COMMENT '평수',
-	`floor`	INT	NOT NULL COMMENT '층수',
-	`built_year`	INT	NOT NULL COMMENT '준공 년',
-	`name`	varchar(255)	NOT NULL COMMENT '단지 이름',
-	`transaction_date`	Date	NOT NULL COMMENT '거래일자',
-	`price`	BigInt	NOT NULL COMMENT '가격'
-);
-
-CREATE TABLE `registers` (
-	`register_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '등본 id',
-	`file_path`	VARCHAR(255)	NOT NULL COMMENT '등본 파일 위치',
-	`house_id`	BIGINT	NOT NULL COMMENT '집 id',
-	`analysis_id`	BIGINT	NOT NULL COMMENT '분석 결과 id',
+CREATE TABLE `favorites` (
+	`favorite_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '즐겨찾기 id', 
+	`user_id`	BIGINT	NOT NULL COMMENT '즐겨찾기 유저',
+	`house_id`	BIGINT	NOT NULL COMMENT '즐겨 찾기 id',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
-	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '등본 활성 상태',
-    CONSTRAINT `fk_registers_houses` FOREIGN KEY (`house_id`) REFERENCES `houses`(`house_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk_registers_analysis` FOREIGN KEY (`analysis_id`) REFERENCES `analysis`(`analysis_id`) ON DELETE CASCADE ON UPDATE CASCADE
+	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '즐겨찾기 활성상태',
+    CONSTRAINT `fk_favorites_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_favorites_houses` FOREIGN KEY (`house_id`) REFERENCES `houses`(`house_id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `analysis` (
+	`analysis_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분석 id',
+	`summary`	TEXT	NOT NULL COMMENT '분석 내용 요약',
+	`warnings`	INTEGER	NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
+	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '분석 생성시간',
+	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '분석 수정시간',
+	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '분석 활성 상태'
 );
 
 CREATE TABLE `contracts` (
@@ -99,30 +116,62 @@ CREATE TABLE `contracts` (
     CONSTRAINT `fk_contracts_analysis` FOREIGN KEY (`analysis_id`) REFERENCES `analysis`(`analysis_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE `analysis` (
-	`analysis_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분석 id',
-	`summary`	TEXT	NOT NULL COMMENT '분석 내용 요약',
-	`warnings`	INTEGER	NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
+CREATE TABLE `contract_file_paths` (
+	`path_id`	VARCHAR(255)	NOT NULL,
+	`file_path`	VARCHAR(255)	NOT NULL,
+	`contract_id`	BIGINT	NOT NULL
+);
+
+CREATE TABLE `registers` (
+	`register_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '등본 id',
+	`file_path`	VARCHAR(255)	NOT NULL COMMENT '등본 파일 위치',
+	`house_id`	BIGINT	NOT NULL COMMENT '집 id',
+	`analysis_id`	BIGINT	NOT NULL COMMENT '분석 결과 id',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
-	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '분석 활성 상태'
+	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '등본 활성 상태',
+    CONSTRAINT `fk_registers_houses` FOREIGN KEY (`house_id`) REFERENCES `houses`(`house_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_registers_analysis` FOREIGN KEY (`analysis_id`) REFERENCES `analysis`(`analysis_id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `registry_file_path` (
+	`path_id`	VARCHAR(255)	NOT NULL,
+	`file_path`	VARCHAR(255)	NOT NULL,
+	`registry_id`	BIGINT	NOT NULL
 );
 
 CREATE TABLE `assessments` (
 	`assessment_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '진단서 id',
-	`completness`	VARCHAR(255)	NOT NULL COMMENT '진단 진행도',
+	`completness`	INTEGER	NOT NULL COMMENT '진단 진행도',
 	`user_id`	BIGINT	NOT NULL COMMENT '유저 id',
 	`contracts_id`	BIGINT	NOT NULL COMMENT '계약서 id',
 	`register_id`	BIGINT	NOT NULL COMMENT '등본 id',
-	`location`	Point	NOT NULL COMMENT '위치',
-	`price`	BIGINT	NOT NULL COMMENT '사용자 매매가',
-	`market_price`	BIGINT	NOT NULL COMMENT '근처 시세',
+    `assessment_house_id`	BIGINT	NOT NULL COMMENT '진단 집 id',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
 	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태',
     CONSTRAINT `fk_assessments_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_assessments_contracts` FOREIGN KEY (`contracts_id`) REFERENCES `contracts`(`contract_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk_assessments_registers` FOREIGN KEY (`register_id`) REFERENCES `registers`(`register_id`) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT `fk_assessments_registers` FOREIGN KEY (`register_id`) REFERENCES `registers`(`register_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_assessments_assessment_houses` FOREIGN KEY (`assessment_house_id`) REFERENCES `assessment_houses`(`assessment_house_id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `assessment_houses` (
+	`assessment_house_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
+	`location`	Point	NOT NULL COMMENT '위치',
+	`price`	BIGINT	NOT NULL COMMENT '사용자 매매가',
+	`market_price`	BIGINT	NOT NULL COMMENT '근처 시세',
+	`area`	DECIMAL(6,3)	NOT NULL COMMENT '평수',
+	`floor`	INT	NOT NULL COMMENT '층수',
+    `sggCd`	VARCHAR(255)	NOT NULL COMMENT '지역코드',
+	`umdNm`	VARCHAR(255)	NOT NULL COMMENT '법정동',
+	`jibun`	VARCHAR(255)	NOT NULL COMMENT '지번',
+	`cityNm`	VARCHAR(255)	NOT NULL COMMENT '시군구',
+	`aptNm`	VARCHAR(255)	NOT NULL COMMENT '아파트 단지명',
+	`aptDong`	VARCHAR(255)	NOT NULL COMMENT '아파트 동',
+	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
+	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
+	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태'
 );
 
 CREATE TABLE `hospitals` (
