@@ -40,19 +40,20 @@ CREATE TABLE `users` (
 );
 
 CREATE TABLE `traded_houses` (
-	`traded_house_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
-	`location`	POINT	NOT NULL COMMENT '위치',
-	`area`	DECIMAL(6,3) UNSIGNED NOT NULL COMMENT '평수',
-	`floor`	TINYINT UNSIGNED	NOT NULL COMMENT '층수',
-	`built_year`	SMALLINT UNSIGNED	NOT NULL COMMENT '준공 년',
-	`transaction_date`	Date	NOT NULL COMMENT '거래일자',
-	`price`	INT UNSIGNED NOT NULL COMMENT '가격 (만원 단위)',
-	`sggCd`	VARCHAR(255)	NOT NULL COMMENT '지역코드',
-	`umdNm`	VARCHAR(255)	NOT NULL COMMENT '법정동',
-	`jibun`	VARCHAR(255)	NOT NULL COMMENT '지번',
-	`cityNm`	VARCHAR(255)	NOT NULL COMMENT '시군구',
-	`aptNm`	VARCHAR(255)	NOT NULL COMMENT '아파트 단지명',
-	`aptDong`	VARCHAR(255)	NOT NULL COMMENT '아파트 동'
+    `traded_house_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
+    `location` POINT NOT NULL SRID 4326 COMMENT '위치',
+    `area` DECIMAL(6,3) UNSIGNED NOT NULL COMMENT '평수',
+    `floor` TINYINT UNSIGNED NOT NULL COMMENT '층수',
+    `built_year` SMALLINT UNSIGNED NOT NULL COMMENT '준공 년',
+    `transaction_date` Date NOT NULL COMMENT '거래일자',
+    `price` INT UNSIGNED NOT NULL COMMENT '가격 (만원 단위)',
+    `sggCd` VARCHAR(255) NOT NULL COMMENT '지역코드',
+    `umdNm` VARCHAR(255) NOT NULL COMMENT '법정동',
+    `jibun` VARCHAR(255) NOT NULL COMMENT '지번',
+    `cityNm` VARCHAR(255) NOT NULL COMMENT '시군구',
+    `aptNm` VARCHAR(255) NOT NULL COMMENT '아파트 단지명',
+    `aptDong` VARCHAR(255) NOT NULL COMMENT '아파트 동',
+    SPATIAL INDEX idx_location (location)
 );
 
 CREATE TABLE `posts` (
@@ -61,7 +62,7 @@ CREATE TABLE `posts` (
 	`traded_house_id`	BIGINT	NULL COMMENT '게시글 house_id',
 	`title`	varchar(255)	NOT NULL COMMENT '제목',
 	`content`	text NOT NULL COMMENT '본문',
-	`view_count` INTEGER UNSIGNED NOT NULL DEFAULT '0' COMMENT '조회수',
+	`view_count` INTEGER UNSIGNED NOT NULL	COMMENT '조회수',
 	`prefer_location`	VARCHAR(255)	NOT NULL COMMENT '선호 위치 법정동', 
 	`prefer_room_num`	TINYINT UNSIGNED NOT NULL COMMENT '선호 방 개수',
 	`prefer_area`	DECIMAL(6,3) UNSIGNED	NOT NULL COMMENT '선호 면적',
@@ -127,22 +128,23 @@ CREATE TABLE `contract_file_paths` (
 );
 
 CREATE TABLE `assessment_houses` (
-	`assessment_house_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
-	`location`	Point	NOT NULL COMMENT '위치',
-	`price`	INT UNSIGNED NOT NULL COMMENT '사용자 매매가 (만원 단위)',
-	`market_price`	INT UNSIGNED NOT NULL COMMENT '근처 시세',
-	`area`	DECIMAL(6,3) UNSIGNED NOT NULL COMMENT '평수',
-	`floor`	TINYINT UNSIGNED	NOT NULL COMMENT '층수',
-	`sggCd`	VARCHAR(255)	NOT NULL COMMENT '지역코드',
-	`umdNm`	VARCHAR(255)	NOT NULL COMMENT '법정동',
-	`jibun`	VARCHAR(255)	NOT NULL COMMENT '지번',
-	`cityNm`	VARCHAR(255)	NOT NULL COMMENT '시군구',
-	`aptNm`	VARCHAR(255)	NOT NULL COMMENT '아파트 단지명',
-	`aptDong`	VARCHAR(255)	NOT NULL COMMENT '아파트 동',
-	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
-	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
-	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태',
-    	`risk_degree` TINYINT UNSIGNED NOT NULL COMMENT '위험도 0:안전 커질수록 위험'
+    `assessment_house_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
+    `location` POINT NOT NULL SRID 4326 COMMENT '위치',
+    `price` INT UNSIGNED NOT NULL COMMENT '사용자 매매가 (만원 단위)',
+    `market_price` INT UNSIGNED NOT NULL COMMENT '근처 시세',
+    `area` DECIMAL(6,3) UNSIGNED NOT NULL COMMENT '평수',
+    `floor` TINYINT UNSIGNED NOT NULL COMMENT '층수',
+    `sggCd` VARCHAR(255) NOT NULL COMMENT '지역코드',
+    `umdNm` VARCHAR(255) NOT NULL COMMENT '법정동',
+    `jibun` VARCHAR(255) NOT NULL COMMENT '지번',
+    `cityNm` VARCHAR(255) NOT NULL COMMENT '시군구',
+    `aptNm` VARCHAR(255) NOT NULL COMMENT '아파트 단지명',
+    `aptDong` VARCHAR(255) NOT NULL COMMENT '아파트 동',
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
+    `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
+    `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태',
+    `risk_degree` TINYINT UNSIGNED NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
+    SPATIAL INDEX idx_location (location)
 );
 
 CREATE TABLE `registers` (
@@ -178,31 +180,36 @@ CREATE TABLE `assessments` (
 );
 
 CREATE TABLE `hospitals` (
-	`hospital_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`location`	POINT	NOT NULL COMMENT '위치',
-	`name`	varchar(255)	NOT NULL COMMENT '이름'
+    `hospital_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `location` POINT NOT NULL SRID 4326 COMMENT '위치',
+    `name` varchar(255) NOT NULL COMMENT '이름',
+    SPATIAL INDEX idx_location (location)
 );
 
 CREATE TABLE `stations` (
-	`station_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`location`	POINT	NOT NULL COMMENT '위치',
-	`name`	varchar(255)	NOT NULL COMMENT '이름'
+    `station_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `location` POINT NOT NULL SRID 4326 COMMENT '위치',
+    `name` varchar(255) NOT NULL COMMENT '이름',
+    SPATIAL INDEX idx_location (location)
 );
 
 CREATE TABLE `schools` (
-	`school_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`location`	POINT	NOT NULL COMMENT '위치',
-	`name`	varchar(255)	NOT NULL COMMENT '이름'
+    `school_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `location` POINT NOT NULL SRID 4326 COMMENT '위치',
+    `name` varchar(255) NOT NULL COMMENT '이름',
+    SPATIAL INDEX idx_location (location)
 );
 
 CREATE TABLE `stores` (
-	`store_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`location`	POINT	NOT NULL COMMENT '위치',
-	`name`	varchar(255)	NOT NULL COMMENT '이름'
+    `store_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `location` POINT NOT NULL SRID 4326 COMMENT '위치',
+    `name` varchar(255) NOT NULL COMMENT '이름',
+    SPATIAL INDEX idx_location (location)
 );
 
 CREATE TABLE `parks` (
-	`park_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`location`	POINT	NOT NULL COMMENT '위치',
-	`name`	varchar(255)	NOT NULL COMMENT '이름'
+    `park_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `location` POINT NOT NULL SRID 4326 COMMENT '위치',
+    `name` varchar(255) NOT NULL COMMENT '이름',
+    SPATIAL INDEX idx_location (location)
 );
