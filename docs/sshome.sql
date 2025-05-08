@@ -61,7 +61,7 @@ CREATE TABLE `posts` (
 	`traded_house_id`	BIGINT	NULL COMMENT '게시글 house_id',
 	`title`	varchar(255)	NOT NULL COMMENT '제목',
 	`content`	text NOT NULL COMMENT '본문',
-	`view_count` INTEGER UNSIGNED NOT NULL	COMMENT '조회수',
+	`view_count` INTEGER UNSIGNED NOT NULL DEFAULT '0' COMMENT '조회수',
 	`prefer_location`	VARCHAR(255)	NOT NULL COMMENT '선호 위치 법정동', 
 	`prefer_room_num`	TINYINT UNSIGNED NOT NULL COMMENT '선호 방 개수',
 	`prefer_area`	DECIMAL(6,3) UNSIGNED	NOT NULL COMMENT '선호 면적',
