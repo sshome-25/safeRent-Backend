@@ -141,7 +141,8 @@ CREATE TABLE `assessment_houses` (
 	`aptDong`	VARCHAR(255)	NOT NULL COMMENT '아파트 동',
 	`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
 	`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
-	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태'
+	`status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태',
+    	`risk_degree` TINYINT UNSIGNED NOT NULL COMMENT '위험도 0:안전 커질수록 위험'
 );
 
 CREATE TABLE `registers` (
