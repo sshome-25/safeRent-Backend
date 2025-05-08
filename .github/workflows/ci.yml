@@ -19,8 +19,8 @@ jobs:
         distribution: 'temurin'
         cache: gradle
     
-    - name: Grant execute permission for gradlew
-      run: chmod +x safeRent/gradlew
-      
-    - name: Run Lint Checks
-      run: cd safeRent && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest spotbugsMain spotbugsTest
+    - name: Setup Gradle and Run Lint Checks
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: checkstyleMain checkstyleTest pmdMain pmdTest spotbugsMain spotbugsTest
+        build-root-directory: safeRent
