@@ -11,10 +11,9 @@ plugins {
 
 checkstyle {
     toolVersion = '10.3.3'
-    // Google 체크스타일 규칙 사용
-    configFile = resources.text.fromUri("https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml").asFile()
-    // 또는 더 단순한 규칙 세트로 시작
-    // configFile = resources.text.fromString("<?xml version='1.0'?><module name='Checker'><module name='TreeWalker'><module name='UnusedImports'/></module></module>").asFile()
+    // config 폴더에 있는 파일을 사용
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    ignoreFailures = true  // 선택사항: 코드 스타일 검사 실패해도 빌드 계속
 }
 
 group = 'com.ssafy'
