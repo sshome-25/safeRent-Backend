@@ -9,6 +9,14 @@ plugins {
     id 'com.github.spotbugs' version '5.0.13'  // spotbugsMain 태스크 사용 가능
 }
 
+checkstyle {
+    toolVersion = '10.3.3'
+    // Google 체크스타일 규칙 사용
+    configFile = resources.text.fromUri("https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml").asFile()
+    // 또는 더 단순한 규칙 세트로 시작
+    // configFile = resources.text.fromString("<?xml version='1.0'?><module name='Checker'><module name='TreeWalker'><module name='UnusedImports'/></module></module>").asFile()
+}
+
 group = 'com.ssafy'
 version = '0.0.1-SNAPSHOT'
 
