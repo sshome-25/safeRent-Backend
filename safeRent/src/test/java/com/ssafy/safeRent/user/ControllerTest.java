@@ -71,7 +71,7 @@ public class ControllerTest {
 
         // Then
         try {
-            mockMvc.perform(post("/api/auth/signup")
+            mockMvc.perform(post("/api/user/signup")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(signupRequest)))
                     .andExpect(status().isOk())
@@ -101,7 +101,7 @@ public class ControllerTest {
 
         // Then
         try {
-            mockMvc.perform(post("/api/auth/signup")
+            mockMvc.perform(post("/api/user/signup")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(signupRequest)))
                     .andExpect(status().isInternalServerError());        	
@@ -123,7 +123,7 @@ public class ControllerTest {
                 .build();
 
         // Then
-        mockMvc.perform(post("/api/auth/signup")
+        mockMvc.perform(post("/api/user/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());

@@ -18,10 +18,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests(requests -> requests
-                        .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/user/signup", "/api/user/login").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(login -> login
-                        .loginProcessingUrl("/api/auth/login")
+                        .loginProcessingUrl("/api/user/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .successHandler((request, response, authentication) -> {
