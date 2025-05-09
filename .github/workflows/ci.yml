@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Debug Gradle properties
+      run: |
+        cd safeRent
+        echo "Debugging Gradle properties..."
+        ./gradlew -q printProperties
 
     - name: Debug file structure
       run: |
