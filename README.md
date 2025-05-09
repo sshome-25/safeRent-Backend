@@ -12,6 +12,12 @@
         git checkout master
         git merge origin/main --allow-unrelated-histories  
     ```
+
+5. develop 으로 부터 개발을 한 후 develop에서 모아서 main에 넣습니다.
+6. branch name은 <개발자 이름>/<개발자가 설정한 기능이름>
+7. 해당 개발이 어떤 개발인지는 pr 요청시의 title에 잘 들어나게만 작성해주시면 됩니다.
+
+
 # SSAFY_HOME_FINAL_LEEHEEGYEONG_JUNGYEONSU
 safeRent
 
