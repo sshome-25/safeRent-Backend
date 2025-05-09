@@ -17,6 +17,11 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+
+    - name: Create application.properties from secret
+      run: |
+        echo "${{ secrets.APPLICATION_PROPERTIES }}" > safeRent/src/main/resources/application.properties
+        echo "${{ secrets.APPLICATION_PROPERTIES }}" > safeRent/src/test/resources/application.properties
     
     - name: Grant execute permission for gradlew
       run: chmod +x safeRent/gradlew
