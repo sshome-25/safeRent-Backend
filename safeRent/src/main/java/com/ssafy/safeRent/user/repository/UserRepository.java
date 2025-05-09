@@ -16,9 +16,9 @@ public interface UserRepository {
     @Select("SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END FROM users WHERE email = #{email}")
     boolean existsByEmail(String email);
     
-    @Insert("INSERT INTO users (username, password, email, nickname, phone_number, role, created_at) " +
-            "VALUES (#{username}, #{password}, #{email}, #{nickname}, #{phoneNumber}, #{role}, NOW())")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
+    @Insert("INSERT INTO users (password, email, nickname) " +
+            "VALUES (#{password}, #{email}, #{nickname})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "user_id")
     Long save(User user);
 
 }
