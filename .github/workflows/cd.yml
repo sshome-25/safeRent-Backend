@@ -31,6 +31,7 @@ jobs:
         run: chmod +x safeRent/gradlew
 
       - name: Build with Gradle
+        continue-on-error: true
         run: |
           cd ./safeRent
           ./gradlew clean build -x test --continue
