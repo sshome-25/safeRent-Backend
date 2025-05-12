@@ -44,7 +44,7 @@ public class UserService {
        }
         // 응답 객체 생성
         UserResponse userResponse = UserResponse.builder()
-        		.id(userId)
+        		.id(user.getId())
         		.email(user.getEmail())
         		.nickname(user.getNickname())
         		.build();
