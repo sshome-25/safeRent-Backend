@@ -27,6 +27,10 @@ CREATE TABLE `roles` (
 	`name`	varchar(255)	NOT NULL COMMENT '권한 이름'
 );
 
+INSERT INTO `roles` (`role_id`, `name`) VALUES
+(1, 'ROLE_ADMIN'),
+(2, 'ROLE_USER');
+
 CREATE TABLE `users` (
 	`user_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '유저 id',
 	`email`	varchar(255) UNIQUE NOT NULL COMMENT '유저 이메일',
