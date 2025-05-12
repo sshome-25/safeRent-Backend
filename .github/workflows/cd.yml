@@ -14,7 +14,7 @@ jobs:
 
       - name: Create application properties from secret
         run: |
-          cd ./src/main/resources
+          cd ./safeRent/src/main/resources
           touch ./application.properties
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./application.properties
                     
