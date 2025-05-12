@@ -1,6 +1,10 @@
 package com.ssafy.safeRent.user.dto.model;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class User {
+public class User implements UserDetails {
     private Long id;
     private String email;
     private String password;
@@ -22,4 +26,16 @@ public class User {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
