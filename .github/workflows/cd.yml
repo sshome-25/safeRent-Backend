@@ -39,8 +39,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./safeRent
+          file: ./safeRent/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/safeRent:latest
           
