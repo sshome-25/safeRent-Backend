@@ -48,7 +48,7 @@ jobs:
           context: ./safeRent
           file: ./safeRent/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/safeRent:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/safe-rent:latest
           
   deploy:
     needs: build-and-push
