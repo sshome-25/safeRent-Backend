@@ -32,7 +32,7 @@ public class PDFConverter {
 			int pageCount = document.getNumberOfPages();
 
 			for (int page = 0; page < pageCount; page++) {
-				BufferedImage image = pdfRenderer.renderImageWithDPI(page, 300); // 300 DPI
+				BufferedImage image = pdfRenderer.renderImageWithDPI(page, 500); // 500 DPI
 
 				// 로컬에 이미지 저장
 				String fileName = outputDir + "page-" + (page + 1) + ".jpeg";

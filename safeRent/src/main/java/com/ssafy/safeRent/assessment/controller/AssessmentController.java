@@ -19,7 +19,7 @@ public class AssessmentController {
   private final AssessmentService assessmentService;
 
   @PostMapping("/register")
-  public Mono<ResponseEntity<?>> analyzeProperty(@RequestParam("id") String id,
+  public Mono<ResponseEntity<String>> analyzeProperty(@RequestParam("id") String id,
       @RequestParam("register_file") MultipartFile pdfFile) {
     System.out.println("register 컨트롤러");
     return assessmentService.analyzeProperty(pdfFile);
