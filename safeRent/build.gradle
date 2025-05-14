@@ -12,7 +12,7 @@ plugins {
 checkstyle {
     toolVersion = '10.3.3'
     // config 폴더에 있는 파일을 사용
-    configFile = file("${projectDir}/config/checkstyle/checkstyle.xml")
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
     ignoreFailures = true  // 선택사항: 코드 스타일 검사 실패해도 빌드 계속
 }
 
@@ -51,6 +51,7 @@ dependencies {
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
