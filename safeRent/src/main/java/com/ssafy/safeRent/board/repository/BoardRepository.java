@@ -16,7 +16,7 @@ import com.ssafy.safeRent.board.dto.model.Post;
 public interface BoardRepository {
 
         // 1. 게시글 목록 조회
-        @Select("SELECT p.post_id, p.title, p.view_count, p.prefer_location, p.prefer_room_num, p.prefer_area, p.isPark, "
+        @Select("SELECT p.post_id AS postId, p.title, p.view_count AS viewCount, p.prefer_location AS preferLocation, p.prefer_room_num AS preferRoomNum, p.prefer_area AS preferArea, p.isPark, "
                         +
                         "p.content, p.created_at, u.nickname AS authorNickname, COUNT(c.comment_id) as commentCount, p.user_id AS userId, "
                         + "p.traded_house_id AS tradedHouseId " +
