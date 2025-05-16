@@ -29,6 +29,11 @@ import reactor.core.publisher.Mono;
 public class AssessmentController {
 
 	private final AssessmentService assessmentService;
+	
+	@GetMapping("/health")
+	public ResponseEntity<?> healthCheck() {
+		return ResponseEntity.ok().body("health check");
+	}
 
 	// 진단서 생성과 매물 가격, 위치 등록
 	@PostMapping
@@ -66,6 +71,7 @@ public class AssessmentController {
 			@RequestParam("registerId") Long registerId) {
 		RegisterAnalysisResponse registerAnalysisResponse = assessmentService
 				.getRegisterAnalysis(user.getId(), registerId);
+		System.out.println("register");
 		return ResponseEntity.ok().body(registerAnalysisResponse);
 	}
 
