@@ -21,4 +21,10 @@ public interface UserRepository {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "user_id")
     Long save(User user);
 
+    @Select("select * from users where nickname = #{nickname}")
+	User findByNickname(String nickname);
+
+    @Select("select * from users where email = #{email}")
+	User findByEmail(String email);
+
 }

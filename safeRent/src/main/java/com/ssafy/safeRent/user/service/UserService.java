@@ -1,5 +1,8 @@
 package com.ssafy.safeRent.user.service;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +16,9 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 	
 	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
 
 	@Transactional
     public UserResponse registerUser(SignupRequest signupRequest) throws Exception {
@@ -32,7 +34,7 @@ public class UserService {
         // 새 사용자 생성
         User user = User.builder()
         		.email(signupRequest.getEmail())
-        		.password(passwordEncoder.encode(signupRequest.getPassword()))
+        		.password(signupRequest.getPassword())
         		.nickname(signupRequest.getNickname())
         		.build();
         
@@ -51,5 +53,15 @@ public class UserService {
         
         return userResponse;
     }
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = userRepository.findByEmail(username);
+		return User.builder()
+				.email(user.getEmail())
+				.nickname(user.getNickname())
+				.password(user.getPassword())
+				.build();
+	}
 
 }

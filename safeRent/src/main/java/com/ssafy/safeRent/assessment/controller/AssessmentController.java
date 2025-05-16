@@ -68,7 +68,7 @@ public class AssessmentController {
 	// 진단서 ID에 대해서 등기부 조회
 	@GetMapping("/register")
 	public ResponseEntity<?> getRegisterAnalyze(@AuthenticationPrincipal User user,
-			@RequestParam("registerId") Long registerId) {
+			@RequestParam("register_id") Long registerId) {
 		RegisterAnalysisResponse registerAnalysisResponse = assessmentService
 				.getRegisterAnalysis(user.getId(), registerId);
 		System.out.println("register");
@@ -82,5 +82,11 @@ public class AssessmentController {
 		ContractAnalysisResponse contractAnalysisResponse = assessmentService
 				.getContractAnalysis(user.getId(), contractId);
 		return ResponseEntity.ok().body(contractAnalysisResponse);
+	}
+	
+	// 비회원에 대한 평가 api
+	@PostMapping("/guest")
+	public ResponseEntity<?> assessGuest() {
+		return ResponseEntity.ok().body("success");
 	}
 }
