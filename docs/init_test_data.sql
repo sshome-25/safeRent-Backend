@@ -1,22 +1,25 @@
+use safeRent;
+
+-- 외래키 체크 해제
+SET FOREIGN_KEY_CHECKS = 0;
+
 -- 기존 데이터 삭제
-DELETE FROM assessments;
-DELETE FROM favorites;
-DELETE FROM comments;
-DELETE FROM posts;
-DELETE FROM contract_file_paths;
-DELETE FROM register_file_paths;
-DELETE FROM contracts;
-DELETE FROM registers;
-DELETE FROM analysis;
-DELETE FROM traded_houses;
-DELETE FROM assessment_houses;
-DELETE FROM users;
-DELETE FROM roles;
-DELETE FROM hospitals;
-DELETE FROM stations;
-DELETE FROM schools;
-DELETE FROM stores;
-DELETE FROM parks;
+TRUNCATE TABLE register_file_paths;  -- registers 참조
+TRUNCATE TABLE contract_file_paths;  -- contracts 참조
+TRUNCATE TABLE assessment_houses;    -- assessments, traded_houses 참조
+TRUNCATE TABLE analysis;             -- users, traded_houses 참조
+TRUNCATE TABLE favorites;            -- users, traded_houses 참조
+TRUNCATE TABLE comments;             -- users, posts, traded_houses 참조
+TRUNCATE TABLE posts;                -- users, traded_houses 참조
+TRUNCATE TABLE assessments;          -- contracts, registers, users 참조
+TRUNCATE TABLE registers;            -- users, traded_houses 참조
+TRUNCATE TABLE contracts;            -- users, traded_houses 참조
+TRUNCATE TABLE traded_houses;        -- users 참조
+TRUNCATE TABLE users;                -- roles 참조
+TRUNCATE TABLE roles;                -- 최상위 부모
+
+-- 외래키 체크 복구
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- 권한 정보 삽입
 INSERT INTO roles (role_id, name) VALUES 
@@ -25,27 +28,27 @@ INSERT INTO roles (role_id, name) VALUES
 (3, '부동산 중개사');
 
 -- 사용자 정보 삽입
-INSERT INTO users (email, password, nickname, role_id) VALUES
-('admin@saferent.com', SHA2('admin123', 256), '관리자', 1),
-('user1@example.com', SHA2('password123', 256), '홍길동', 2),
-('user2@example.com', SHA2('password123', 256), '김철수', 2),
-('user3@example.com', SHA2('password123', 256), '이영희', 2),
-('user4@example.com', SHA2('password123', 256), '박민준', 2),
-('agent1@realestate.com', SHA2('agent123', 256), '강부동', 3),
-('agent2@realestate.com', SHA2('agent123', 256), '최중개', 3);
+INSERT INTO users (user_id, email, password, nickname, role_id) VALUES
+(1, 'admin@saferent.com', SHA2('admin123', 256), '관리자', 1),
+(2, 'user1@example.com', SHA2('password123', 256), '홍길동', 2),
+(3, 'user2@example.com', SHA2('password123', 256), '김철수', 2),
+(4, 'user3@example.com', SHA2('password123', 256), '이영희', 2),
+(5, 'user4@example.com', SHA2('password123', 256), '박민준', 2),
+(6, 'agent1@realestate.com', SHA2('agent123', 256), '강부동', 3),
+(7, 'agent2@realestate.com', SHA2('agent123', 256), '최중개', 3);
 
 -- 거래된 집 정보 삽입
 INSERT INTO traded_houses (location, area, floor, built_year, transaction_date, price, sggCd, umdNm, jibun, cityNm, aptNm, aptDong) VALUES
-(POINT(126.97806, 37.56667), 84.2, 5, 2010, '2023-05-15', 85000, '11110', '종로구', '1-1', '서울시', '스카이뷰', 'A동'),
-(POINT(127.04889, 37.50722), 59.8, 10, 2015, '2023-06-10', 65000, '11680', '강남구', '102-3', '서울시', '한강파크', 'B동'),
-(POINT(126.93694, 37.55139), 76.3, 8, 2005, '2023-04-22', 70000, '11440', '마포구', '45-2', '서울시', '강변타워', 'C동'),
-(POINT(127.02583, 37.49361), 92.5, 12, 2018, '2023-07-05', 95000, '11680', '강남구', '523-1', '서울시', '블루힐스', 'A동'),
-(POINT(126.89167, 37.51278), 68.1, 7, 2012, '2023-03-30', 55000, '11410', '서대문구', '76-3', '서울시', '그린아파트', 'D동');
+(ST_GeomFromText('POINT(37.56667 126.97806)', 4326), 84.2, 5, 2010, '2023-05-15', 85000, '11110', '종로구', '1-1', '서울시', '스카이뷰', 'A동'),
+(ST_GeomFromText('POINT(37.50722 127.04889)', 4326), 59.8, 10, 2015, '2023-06-10', 65000, '11680', '강남구', '102-3', '서울시', '한강파크', 'B동'),
+(ST_GeomFromText('POINT(37.55139 126.93694)', 4326), 76.3, 8, 2005, '2023-04-22', 70000, '11440', '마포구', '45-2', '서울시', '강변타워', 'C동'),
+(ST_GeomFromText('POINT(37.49361 127.02583)', 4326), 92.5, 12, 2018, '2023-07-05', 95000, '11680', '강남구', '523-1', '서울시', '블루힐스', 'A동'),
+(ST_GeomFromText('POINT(37.51278 126.89167)', 4326), 68.1, 7, 2012, '2023-03-30', 55000, '11410', '서대문구', '76-3', '서울시', '그린아파트', 'D동');
 
 -- 이후 95개 더 삽입
 INSERT INTO traded_houses (location, area, floor, built_year, transaction_date, price, sggCd, umdNm, jibun, cityNm, aptNm, aptDong)
 SELECT 
-    POINT(126.5 + RAND() * 1, 37.4 + RAND() * 0.3), -- 서울 지역 대략적인 좌표 범위
+    ST_GeomFromText(CONCAT('POINT(', (37.4 + RAND() * 0.3), ' ', (126.5 + RAND() * 1), ')'), 4326), -- 서울 지역 대략적인 좌표 범위
     ROUND(40 + RAND() * 80, 1), -- 40~120 평수
     CEILING(RAND() * 25), -- 1~25층
     2000 + CEILING(RAND() * 23), -- 2000~2023년 준공
@@ -65,7 +68,7 @@ LIMIT 95;
 -- 진단용 집 정보 삽입
 INSERT INTO assessment_houses (location, price, market_price, area, floor, sggCd, umdNm, jibun, cityNm, aptNm, aptDong, risk_degree)
 SELECT 
-    POINT(126.5 + RAND() * 1, 37.4 + RAND() * 0.3), -- 서울 지역 대략적인 좌표 범위
+    ST_GeomFromText(CONCAT('POINT(', (37.4 + RAND() * 0.3), ' ', (126.5 + RAND() * 1), ')'), 4326), -- 서울 지역 대략적인 좌표 범위
     30000 + CEILING(RAND() * 100000), -- 3억~13억원 (만원 단위)
     30000 + CEILING(RAND() * 100000), -- 3억~13억원 (만원 단위)
     ROUND(40 + RAND() * 80, 1), -- 40~120 평수
@@ -83,7 +86,7 @@ FROM
 LIMIT 100;
 
 -- 게시글 정보 삽입
-INSERT INTO posts (user_id, traded_house_id, title, content, view_count, prefer_location, prefer_room_num, prefer_area, parking)
+INSERT INTO posts (user_id, traded_house_id, title, content, view_count, prefer_location, prefer_room_num, prefer_area, is_park)
 SELECT 
     (SELECT user_id FROM users ORDER BY RAND() LIMIT 1), -- 랜덤 사용자
     IF(RAND() > 0.3, (SELECT traded_house_id FROM traded_houses ORDER BY RAND() LIMIT 1), NULL), -- 70% 확률로 집과 연결
@@ -208,52 +211,3 @@ FROM
 JOIN 
     registers r ON c.analysis_id = r.analysis_id
 LIMIT 100;
-
--- 편의시설 정보 삽입 (병원)
-INSERT INTO hospitals (location, name)
-SELECT 
-    POINT(126.5 + RAND() * 1, 37.4 + RAND() * 0.3), -- 서울 지역 대략적인 좌표 범위
-    CONCAT(ELT(CEILING(RAND() * 5), '서울', '연세', '강남', '삼성', '국민'), ' ', ELT(CEILING(RAND() * 3), '병원', '의원', '메디컬센터'))
-FROM 
-    INFORMATION_SCHEMA.TABLES
-LIMIT 20;
-
--- 편의시설 정보 삽입 (역)
-INSERT INTO stations (location, name)
-SELECT 
-    POINT(126.5 + RAND() * 1, 37.4 + RAND() * 0.3), -- 서울 지역 대략적인 좌표 범위
-    CONCAT(ELT(CEILING(RAND() * 10), '강남', '서울', '잠실', '홍대입구', '여의도', '신촌', '종로', '명동', '석계', '성수'), '역')
-FROM 
-    INFORMATION_SCHEMA.TABLES
-LIMIT 20;
-
--- 편의시설 정보 삽입 (학교)
-INSERT INTO schools (location, name)
-SELECT 
-    POINT(126.5 + RAND() * 1, 37.4 + RAND() * 0.3), -- 서울 지역 대략적인 좌표 범위
-    CONCAT(ELT(CEILING(RAND() * 10), '서울', '한강', '강남', '미래', '중앙', '동서', '하늘', '푸른', '미소', '행복'), 
-           ELT(CEILING(RAND() * 3), '초등학교', '중학교', '고등학교'))
-FROM 
-    INFORMATION_SCHEMA.TABLES
-LIMIT 20;
-
--- 편의시설 정보 삽입 (상점)
-INSERT INTO stores (location, name)
-SELECT 
-    POINT(126.5 + RAND() * 1, 37.4 + RAND() * 0.3), -- 서울 지역 대략적인 좌표 범위
-    CONCAT(ELT(CEILING(RAND() * 5), 'GS', 'CU', '세븐일레븐', '이마트24', '미니스톱'), ' ', 
-           ELT(CEILING(RAND() * 10), '강남점', '서초점', '송파점', '마포점', '영등포점', '용산점', '강서점', '성북점', '종로점', '중구점'))
-FROM 
-    INFORMATION_SCHEMA.TABLES
-LIMIT 20;
-
--- 편의시설 정보 삽입 (공원)
-INSERT INTO parks (location, name)
-SELECT 
-    POINT(126.5 + RAND() * 1, 37.4 + RAND() * 0.3), -- 서울 지역 대략적인 좌표 범위
-    CONCAT(ELT(CEILING(RAND() * 10), '한강', '남산', '서울숲', '올림픽', '북서울', '서래', '보라매', '여의도', '달빛', '청계천'), ' 공원')
-FROM 
-    INFORMATION_SCHEMA.TABLES
-LIMIT 20;
-
-
