@@ -26,7 +26,7 @@ public class PostRequest {
   @JsonProperty("prefer_area")
   private Double preferArea;
 
-  @JsonProperty("isPark")
+  @JsonProperty("is_park")
   private Boolean isPark;
 
   @JsonProperty("comment_count")
