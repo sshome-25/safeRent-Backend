@@ -86,7 +86,14 @@ public class AssessmentController {
 	
 	// 비회원에 대한 평가 api
 	@PostMapping("/guest")
-	public ResponseEntity<?> assessGuest() {
+	public ResponseEntity<?> assessGuest(
+		@RequestParam(value = "latitude") Double latitude,
+		@RequestParam(value = "longitude") Double longitude,
+		@RequestParam(value = "price") Integer price,
+		@RequestPart("register_file") MultipartFile registerFile,
+		@RequestPart("contract_file") MultipartFile contractFile
+	) {
+		System.out.println(latitude + " " + longitude + " " + price);
 		return ResponseEntity.ok().body("success");
 	}
 }

@@ -3,6 +3,9 @@ package com.ssafy.safeRent.user.repository;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.ResultType;
+import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
 import com.ssafy.safeRent.user.dto.model.User;
@@ -25,6 +28,9 @@ public interface UserRepository {
 	User findByNickname(String nickname);
 
     @Select("select * from users where email = #{email}")
+    @Results({
+        @Result(property = "id", column = "user_id")
+    })
 	User findByEmail(String email);
 
 }

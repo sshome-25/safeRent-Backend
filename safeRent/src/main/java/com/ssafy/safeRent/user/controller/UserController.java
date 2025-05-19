@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,9 +67,9 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
     
-    private void authenticate(String nickname, String password) throws Exception {
+    private void authenticate(String email, String password) throws Exception {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(nickname, password));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
@@ -77,8 +78,21 @@ public class UserController {
     }
     
     @GetMapping("/testToken")
-    public ResponseEntity<?> testToken() {
-    	System.out.println("성공");
+    public ResponseEntity<?> testToken(@AuthenticationPrincipal User user) {
+        System.out.println(user);
     	return ResponseEntity.ok().body("success");
+    }
+
+    @PostMapping("/guest-token")
+    public ResponseEntity<?> createGuestToken(@RequestBody Map<String, String> request) {
+        String purpose = request.getOrDefault("purpose", "general-access");
+
+        String token = jwtTokenUtil.generateGuestToken(purpose);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        response.put("type", "Bearer");
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -37,12 +37,11 @@ public class SecurityConfig {
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests(requests -> requests
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/user/signup").permitAll()
-                        .requestMatchers("/api/user/login").permitAll()
-                        .requestMatchers("/api/assessments/health").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/assessments/guest").permitAll()
-                        .anyRequest().authenticated());
+                    .requestMatchers("/api/user/signup").permitAll()
+                    .requestMatchers("/api/user/login").permitAll()
+                    .requestMatchers("/api/assessments/health").permitAll()
+                    .requestMatchers("/api/user/guest-token").permitAll()
+                    .anyRequest().authenticated());
         
         // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

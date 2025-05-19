@@ -38,10 +38,9 @@ public class User implements UserDetails {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return id + " " + email + " " + password + " " + nickname;
+		return id + " " + email + " " + password + " " + nickname + " " + role + " " + status;
 	}
 }

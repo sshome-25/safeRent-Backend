@@ -58,10 +58,12 @@ public class UserService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByEmail(username);
 		return User.builder()
-				.email(user.getEmail())
-				.nickname(user.getNickname())
-				.password(user.getPassword())
-				.build();
+			.id(user.getId())
+			.email(user.getEmail())
+			.nickname(user.getNickname())
+			.password(user.getPassword())
+			.status(user.getStatus())
+			.build();
 	}
 
 }
