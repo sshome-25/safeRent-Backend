@@ -16,12 +16,13 @@ DROP TABLE IF EXISTS assessment_houses;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
 
-
-
 CREATE TABLE `roles` (
                          `role_id` TINYINT NOT NULL PRIMARY KEY COMMENT '권한 id',
                          `name`	varchar(255)	NOT NULL COMMENT '권한 이름'
 );
+
+INSERT INTO `roles` (`role_id`, `name`) values (1, 'admin');
+INSERT INTO `roles` (`role_id`, `name`) values (2, 'user');
 
 CREATE TABLE `users` (
                          `user_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '유저 id',
