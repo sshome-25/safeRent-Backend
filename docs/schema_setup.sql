@@ -32,7 +32,7 @@ CREATE TABLE `users` (
                          `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
                          `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '유저 활성 상태',
                          `nickname`	varchar(255) UNIQUE NOT NULL COMMENT '유저 닉네임',
-                         `role_id`	TINYINT	NOT NULL COMMENT '유저 권한',
+                         `role_id`	TINYINT	NOT NULL DEFAULT 2 COMMENT '유저 권한',
                          CONSTRAINT `fk_users_roles` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
