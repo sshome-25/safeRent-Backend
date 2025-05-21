@@ -26,4 +26,9 @@ public class SignupRequest {
     @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
 	private String nickname;
 	
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
 }

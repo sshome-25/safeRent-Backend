@@ -46,7 +46,7 @@ CREATE TABLE `traded_houses` (
 	`traded_house_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
 	`location`	POINT	NOT NULL COMMENT '위치',
 	`area`	DECIMAL(6,3) UNSIGNED NOT NULL COMMENT '평수',
-	`floor`	TINYINT UNSIGNED	NOT NULL COMMENT '층수',
+	`floor`	TINYINT NOT NULL COMMENT '층수',
 	`built_year`	SMALLINT UNSIGNED	NOT NULL COMMENT '준공 년',
 	`transaction_date`	Date	NOT NULL COMMENT '거래일자',
 	`price`	INT UNSIGNED NOT NULL COMMENT '가격 (만원 단위)',
