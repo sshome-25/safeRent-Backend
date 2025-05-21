@@ -21,10 +21,12 @@ import com.ssafy.safeRent.assessment.service.AssessmentService;
 import com.ssafy.safeRent.user.dto.model.User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/assessments")
+@Slf4j
 @RequiredArgsConstructor
 public class AssessmentController {
 
@@ -68,7 +70,7 @@ public class AssessmentController {
 	// 진단서 ID에 대해서 등기부 조회
 	@GetMapping("/register")
 	public ResponseEntity<?> getRegisterAnalyze(@AuthenticationPrincipal User user,
-			@RequestParam("registerId") Long registerId) {
+			@RequestParam("register_id") Long registerId) {
 		RegisterAnalysisResponse registerAnalysisResponse = assessmentService
 				.getRegisterAnalysis(user.getId(), registerId);
 		System.out.println("register");
@@ -82,5 +84,30 @@ public class AssessmentController {
 		ContractAnalysisResponse contractAnalysisResponse = assessmentService
 				.getContractAnalysis(user.getId(), contractId);
 		return ResponseEntity.ok().body(contractAnalysisResponse);
+	}
+	
+	// 비회원에 대한 평가 api
+	@PostMapping("/guest")
+	public ResponseEntity<?> assessGuest(
+		@RequestParam(value = "latitude") Double latitude,
+		@RequestParam(value = "longitude") Double longitude,
+		@RequestParam(value = "price") Integer price,
+		@RequestPart("register_file") MultipartFile registerFile,
+		@RequestPart("contract_file") MultipartFile contractFile
+	) {
+		System.out.println(latitude + " " + longitude + " " + price);
+		return ResponseEntity.ok().body("success");
+	}
+	
+	@PostMapping("/member")
+	public ResponseEntity<?> assessMember(
+		@RequestParam(value = "latitude") Double latitude,
+		@RequestParam(value = "longitude") Double longitude,
+		@RequestParam(value = "price") Integer price,
+		@RequestPart("register_file") MultipartFile registerFile,
+		@RequestPart("contract_file") MultipartFile contractFile
+	) {
+		log.info("member");
+		return ResponseEntity.ok().body("success");
 	}
 }
