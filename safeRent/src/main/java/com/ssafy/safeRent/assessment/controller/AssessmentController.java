@@ -92,10 +92,11 @@ public class AssessmentController {
 		@RequestParam(value = "latitude") Double latitude,
 		@RequestParam(value = "longitude") Double longitude,
 		@RequestParam(value = "price") Integer price,
+		@RequestParam(value = "area") Double area,
 		@RequestPart("register_file") MultipartFile registerFile,
 		@RequestPart("contract_file") MultipartFile contractFile
 	) {
-		System.out.println(latitude + " " + longitude + " " + price);
+		assessmentService.guessPrice(latitude, longitude, area);
 		return ResponseEntity.ok().body("success");
 	}
 	

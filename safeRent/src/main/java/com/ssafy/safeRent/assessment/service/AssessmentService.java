@@ -1,5 +1,6 @@
 package com.ssafy.safeRent.assessment.service;
 
+import com.ssafy.safeRent.assessment.dto.model.Statistic;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,12 @@ public class AssessmentService {
 		Assessment assessment = Assessment.builder()
 				.build();
 		assessmentRepository.saveAssessment(assessment);
+		return null;
+	}
+
+	public Integer guessPrice(Double latitude, Double longitude, Double area) {
+		Statistic statistic = assessmentRepository.getAreaStatistics(latitude, longitude, area);
+		System.out.println(statistic);
 		return null;
 	}
 
