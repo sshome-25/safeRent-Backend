@@ -21,10 +21,12 @@ import com.ssafy.safeRent.assessment.service.AssessmentService;
 import com.ssafy.safeRent.user.dto.model.User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/assessments")
+@Slf4j
 @RequiredArgsConstructor
 public class AssessmentController {
 
@@ -94,6 +96,18 @@ public class AssessmentController {
 		@RequestPart("contract_file") MultipartFile contractFile
 	) {
 		System.out.println(latitude + " " + longitude + " " + price);
+		return ResponseEntity.ok().body("success");
+	}
+	
+	@PostMapping("/member")
+	public ResponseEntity<?> assessMember(
+		@RequestParam(value = "latitude") Double latitude,
+		@RequestParam(value = "longitude") Double longitude,
+		@RequestParam(value = "price") Integer price,
+		@RequestPart("register_file") MultipartFile registerFile,
+		@RequestPart("contract_file") MultipartFile contractFile
+	) {
+		log.info("member");
 		return ResponseEntity.ok().body("success");
 	}
 }
