@@ -2,6 +2,7 @@ package com.ssafy.safeRent.assessment.repository;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -22,28 +23,34 @@ public interface AssessmentRepository {
 			+ "set"
 			+ "register_id = #{registerId}"
 			+ "where assessment_id = #{assessmentId} and status = 'ACTIVE';")
-	void updateAssessmentRegister();
+	void updateAssessmentRegister(Long registerId, Long assessmentId);
 
 	@Update("update assessments "
 			+ "set"
 			+ "contract_id = #{contractId}"
 			+ "where assessment_id = #{assessmentId} and status = 'ACTIVE';")
 	void updateAssessmentContract();
+	// =======
 
-	@Insert("insert into registers ("
-			+ "analysis_id"
-			+ ") values ("
-			+ "#{analysisId}"
-			+ ");")
-	void saveRegister(Long analysisId);
+	@Insert("INSERT INTO analysis (summary, risk_degree) VALUES (#{summary}, #{riskDegree})")
+	@Options(useGeneratedKeys = true, keyColumn = "analysis_id")
+	Long saveAnalysis(String summary, Integer riskDegree);
 
+	@Insert("INSERT INTO registers (analysis_id) VALUES (#{analysisId})")
+	@Options(useGeneratedKeys = true, keyColumn = "register_id")
+	Long saveRegister(Long analysisId);
+
+	@Insert("INSERT INTO register_file_paths (file_path, register_id) VALUES (#{filePath}, #{registerId})")
+	void saveRegisterFilePaths(String filePath, Long registerId);
+
+	// =======
 	@Insert("insert into contracts ("
 			+ "analysis_id"
 			+ ") values ("
 			+ "#{analysisId}"
 			+ ");")
 	void saveContract(Long analysisId);
-	
+
 	// TODO: file query custom
 	@Select("SELECT "
 			+ "r.register_id,\r\n"
