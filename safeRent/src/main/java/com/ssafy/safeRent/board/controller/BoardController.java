@@ -2,6 +2,7 @@ package com.ssafy.safeRent.board.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("api/boards")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST,
+    RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS }, allowCredentials = "true")
 public class BoardController {
 
   private final BoardService boardService;
@@ -38,8 +42,8 @@ public class BoardController {
   }
 
   // 2. 게시글 조회
-  @GetMapping("/{board_id}")
-  public ResponseEntity<?> getPost(@PathVariable("board_id") Long postId) {
+  @GetMapping("/{post_id}")
+  public ResponseEntity<?> getPost(@PathVariable("post_id") Long postId) {
     Post post = boardService.getPost(postId);
     return ResponseEntity.ok().body(post);
   }
@@ -52,16 +56,16 @@ public class BoardController {
   }
 
   // 4. 게시글 수정
-  @PatchMapping("/{board_id}")
-  public ResponseEntity<?> updatePost(@AuthenticationPrincipal User user, @PathVariable("board_id") Long postId,
+  @PatchMapping("/{post_id}")
+  public ResponseEntity<?> updatePost(@AuthenticationPrincipal User user, @PathVariable("post_id") Long postId,
       @Valid @RequestBody PostRequest request) {
     boardService.updatePost(user.getId(), postId, request);
     return ResponseEntity.ok("수정 완료");
   }
 
   // 5. 게시글 삭제
-  @DeleteMapping("/{board_id}")
-  public ResponseEntity<?> deletePost(@AuthenticationPrincipal User user, @PathVariable("board_id") Long postId) {
+  @DeleteMapping("/{post_id}")
+  public ResponseEntity<?> deletePost(@AuthenticationPrincipal User user, @PathVariable("post_id") Long postId) {
     boardService.deletePost(user.getId(), postId);
     return ResponseEntity.ok("삭제 완료");
   }
