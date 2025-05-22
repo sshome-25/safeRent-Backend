@@ -16,6 +16,8 @@ public class AssessmentResponse {
 	private Double longitude;
 	
 	private Boolean isSafe;
+
+	private Integer aroundAvgPrice;
 	// 평가 내용
 	private AssessmentResult grokResult;
 }

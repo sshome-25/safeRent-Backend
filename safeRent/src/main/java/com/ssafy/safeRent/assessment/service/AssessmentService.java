@@ -50,6 +50,7 @@ public class AssessmentService {
 				.latitude(houseInfo.getLatitude())
 				.longitude(houseInfo.getLongitude())
 				.isSafe(assessResult.getIsSafe())
+				.aroundAvgPrice(assessResult.getAroundAvgPrice().intValue())
 				.grokResult(registerResult.getGrokResponse())
 				.build();
 		return response;
@@ -80,6 +81,7 @@ public class AssessmentService {
 		return AssessResult.builder()
 				.isSafe(isSafe)
 				.assessmentHouseId(assessmentHouse.getId())
+				.aroundAvgPrice(statistic.getAvgPrice() )
 				.build();
 
 	}
