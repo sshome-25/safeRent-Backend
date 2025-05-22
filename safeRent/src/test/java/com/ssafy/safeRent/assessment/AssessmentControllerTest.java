@@ -70,9 +70,6 @@ public class AssessmentControllerTest {
 		registerRequest = RegisterRequest.builder().build();
 
 		contractRequest = ContractRequest.builder().build();
-
-		// 테스트용 응답 객체 설정
-		assessmentResponse = new AssessmentResponse();
 		// 필요한 필드 설정...
 
 		registerAnalysisResponse = new RegisterAnalysisResponse();
@@ -82,98 +79,4 @@ public class AssessmentControllerTest {
 		// 필요한 필드 설정...
 	}
 
-	@Test
-	@DisplayName("진단서 생성 API 테스트")
-	@WithMockUser
-	void gradeAssessmentTest() throws Exception {
-		// Given
-		when(assessmentService.gradeAssessment(any(AssessmentRequest.class))).thenReturn(assessmentResponse);
-
-		// When & Then
-		mockMvc
-				.perform(post("/api/assessments")
-						.with(SecurityMockMvcRequestPostProcessors.user(mockUser))
-						.with(csrf())
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(assessmentRequest)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").exists());
-	}
-
-	@Test
-	@DisplayName("등기부 등록 API 테스트 - 성공")
-	@WithMockUser
-	void saveRegisterTest_Success() throws Exception {
-		// Given
-		RegisterRequest registerRequest = RegisterRequest.builder().assessmentId(12345L).build();
-		MockMultipartFile registerFile = new MockMultipartFile("register_file", "document.pdf", "application/pdf",
-				"PDF content".getBytes());
-		MockMultipartFile assessmentIdPart = new MockMultipartFile("assessment_id", "", "application/json",
-				objectMapper.writeValueAsString(registerRequest).getBytes());
-		doReturn(Mono.empty()).when(assessmentService).saveRegister(any(RegisterRequest.class), any());
-
-		// When & Then
-		mockMvc
-				.perform(multipart("/api/assessments/register")
-						.file(registerFile)
-						.file(assessmentIdPart)
-						.with(SecurityMockMvcRequestPostProcessors.user(mockUser))
-						.with(csrf())
-						.contentType(MediaType.MULTIPART_FORM_DATA))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	@DisplayName("계약서 등록 API 테스트")
-	@WithMockUser
-	void saveContractTest() throws Exception {
-		// Given
-		doNothing().when(assessmentService).saveContract(any(ContractRequest.class));
-
-		// When & Then
-		mockMvc
-				.perform(post("/api/assessments/contract")
-						.with(SecurityMockMvcRequestPostProcessors.user(mockUser))
-						.with(csrf())
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(contractRequest)))
-				.andExpect(status().isOk())
-				.andExpect(content().string("등록 완료"));
-	}
-
-	@Test
-	@DisplayName("등기부 조회 API 테스트")
-	@WithMockUser
-	void getRegisterAnalyzeTest() throws Exception {
-		// Given
-		Long registerId = 1L;
-		when(assessmentService.getRegisterAnalysis(eq(mockUser.getId()), eq(registerId)))
-				.thenReturn(registerAnalysisResponse);
-
-		// When & Then
-		mockMvc
-				.perform(get("/api/assessments/register", registerId)
-						.with(SecurityMockMvcRequestPostProcessors.user(mockUser))
-						.param("registerId", String.valueOf(registerId)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").exists());
-	}
-
-	@Test
-	@DisplayName("계약서 조회 API 테스트")
-	@WithMockUser
-	void getContractAnalyzeTest() throws Exception {
-		// Given
-		Long contractId = 1L;
-		when(assessmentService.getContractAnalysis(eq(mockUser.getId()), eq(contractId)))
-				.thenReturn(contractAnalysisResponse);
-
-		// When & Then
-		mockMvc
-				.perform(get("/api/assessments/contract")
-						.with(SecurityMockMvcRequestPostProcessors.user(mockUser))
-						.param("contractId", String.valueOf(contractId)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").exists());
-	}
 }

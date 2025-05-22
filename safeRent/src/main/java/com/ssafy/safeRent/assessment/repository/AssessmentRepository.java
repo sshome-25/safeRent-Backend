@@ -1,24 +1,19 @@
 package com.ssafy.safeRent.assessment.repository;
 
+import com.ssafy.safeRent.assessment.dto.model.Statistic;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import com.ssafy.safeRent.assessment.dto.model.Assessment;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
+import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
 
 @Mapper
 public interface AssessmentRepository {
-
-	@Insert("insert into assessments ("
-			+ "user_id, contract_id, register_id, assessment_house_id"
-			+ ") values ("
-			+ "#{userId},"
-			+ "#{assessmentHouseId}"
-			+ ");")
-	void saveAssessment(Assessment assessment);
-
+	
 	@Update("update assessments "
 			+ "set"
 			+ "register_id = #{registerId}"
@@ -94,4 +89,52 @@ public interface AssessmentRepository {
 			+ "    a.created_at DESC;")
 	void selectContractAnalysis();
 
+	@Select("SELECT "
+		+ "COUNT(*) as trade_cnt, "
+		+ "AVG(price) as avg_price, "
+		+ "MIN(price) as min_price, "
+		+ "MAX(price) as max_price, "
+		+ "AVG(price / area) as price_per_area "
+		+ "FROM traded_houses "
+		+ "WHERE MBRContains( "
+		+ "    ST_GeomFromText(CONCAT( "
+		+ "        'POLYGON((', "
+		+ "        #{latitude} - 0.045, ' ', #{longitude} - 0.057, ',', "
+		+ "        #{latitude} + 0.045, ' ', #{longitude} - 0.057, ',', "
+		+ "        #{latitude} + 0.045, ' ', #{longitude} + 0.057, ',', "
+		+ "        #{latitude} - 0.045, ' ', #{longitude} + 0.057, ',', "
+		+ "        #{latitude} - 0.045, ' ', #{longitude} - 0.057, "
+		+ "        '))'"
+		+ "    ), 4326), "
+		+ "    location "
+		+ ") "
+		+ "AND ST_Distance_Sphere( "
+		+ "    location, "
+		+ "    ST_GeomFromText(CONCAT('POINT(', #{latitude}, ' ', #{longitude}, ')'), 4326) "  // 수정됨
+		+ ") <= 1000 "
+		+ "AND area BETWEEN #{area} - 10 AND #{area} + 10 "  // 수정됨
+		+ "AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR)")
+	Statistic getAreaStatistics(@Param("latitude") Double latitude,
+		@Param("longitude") Double longitude,
+		@Param("area") Double area);
+	
+	@Insert("INSERT INTO assessment_houses ("
+			+ "location, "
+			+ "price, "
+			+ "market_price, "
+			+ "area, "
+			+ "floor, "
+			+ "address, "
+			+ "is_safe"
+			+ ") VALUES ("
+			+ "ST_SRID(POINT(#{longitude}, #{latitude}), 4326),"
+			+ "#{price}, "
+			+ "#{marketPrice}, "
+			+ "#{area}, "
+			+ "#{floor}, "
+			+ "#{address}, "
+			+ "#{isSafe}"
+			+ ")")
+	@Options(useGeneratedKeys = true, keyProperty = "id")
+	Long saveAssessmentHouse(AssessmentHouse assessmentHouse);
 }

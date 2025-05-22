@@ -32,7 +32,7 @@ CREATE TABLE `users` (
                          `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
                          `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '유저 활성 상태',
                          `nickname`	varchar(255) UNIQUE NOT NULL COMMENT '유저 닉네임',
-                         `role_id`	TINYINT	NOT NULL DEFAULT 2 COMMENT '유저 권한',
+                         `role_id`	TINYINT	NOT NULL COMMENT '유저 권한',
                          CONSTRAINT `fk_users_roles` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -131,16 +131,11 @@ CREATE TABLE `assessment_houses` (
                                      `market_price` INT UNSIGNED NOT NULL COMMENT '근처 시세',
                                      `area` DECIMAL(6,3) UNSIGNED NOT NULL COMMENT '평수',
                                      `floor` TINYINT NOT NULL COMMENT '층수',
-                                     `sggCd` VARCHAR(255) NOT NULL COMMENT '지역코드',
-                                     `umdNm` VARCHAR(255) NOT NULL COMMENT '법정동',
-                                     `jibun` VARCHAR(255) NOT NULL COMMENT '지번',
-                                     `cityNm` VARCHAR(255) NOT NULL COMMENT '시군구',
-                                     `aptNm` VARCHAR(255) NOT NULL COMMENT '아파트 단지명',
-                                     `aptDong` VARCHAR(255) NOT NULL COMMENT '아파트 동',
+                                     `address` VARCHAR(255) NOT NULL COMMENT '주소',
                                      `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
                                      `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
                                      `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태',
-                                     `risk_degree` TINYINT UNSIGNED NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
+									 `is_safe` BOOLEAN NOT NULL COMMENT '깡통 판단',
                                      SPATIAL INDEX idx_location (location)
 );
 
@@ -153,7 +148,7 @@ CREATE TABLE `registers` (
                              CONSTRAINT `fk_registers_analysis` FOREIGN KEY (`analysis_id`) REFERENCES `analysis`(`analysis_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE `register_file_paths` (
+CREATE TABLE `register_file_paths` ( 
                                        `register_path_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                        `file_path`	VARCHAR(255)	NOT NULL,
                                        `register_id`	BIGINT	NOT NULL,

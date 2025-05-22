@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -14,8 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ssafy.safeRent.assessment.dto.Response.AssessmentResponse;
 import com.ssafy.safeRent.assessment.dto.Response.ContractAnalysisResponse;
 import com.ssafy.safeRent.assessment.dto.Response.RegisterAnalysisResponse;
-import com.ssafy.safeRent.assessment.dto.request.AssessmentRequest;
-import com.ssafy.safeRent.assessment.dto.request.ContractRequest;
+import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
+import com.ssafy.safeRent.assessment.dto.request.HouseInfoRequest;
 import com.ssafy.safeRent.assessment.dto.request.RegisterRequest;
 import com.ssafy.safeRent.assessment.service.AssessmentService;
 import com.ssafy.safeRent.user.dto.model.User;
@@ -37,14 +36,6 @@ public class AssessmentController {
 		return ResponseEntity.ok().body("health check");
 	}
 
-	// 진단서 생성과 매물 가격, 위치 등록
-	@PostMapping
-	public ResponseEntity<?> gradeAssessment(@AuthenticationPrincipal User user,
-			@RequestBody AssessmentRequest assessmentRequest) {
-		AssessmentResponse assessmentResponse = assessmentService.gradeAssessment(assessmentRequest);
-		return ResponseEntity.ok().body(assessmentResponse);
-	}
-
 	// 등기부 등록
 	@PostMapping("/register")
 	public Mono<ResponseEntity<String>> saveRegister(@AuthenticationPrincipal User user,
@@ -57,14 +48,6 @@ public class AssessmentController {
 				.then(Mono.just(ResponseEntity.ok("등록 완료")))
 				.onErrorResume(Exception.class, e -> Mono.just(ResponseEntity.badRequest()
 						.body("등록 실패: " + e.getMessage())));
-	}
-
-	// 계약서 등록
-	@PostMapping("/contract")
-	public ResponseEntity<?> saveContract(@AuthenticationPrincipal User user,
-			@RequestBody ContractRequest contractRequest) {
-		assessmentService.saveContract(contractRequest);
-		return ResponseEntity.ok("등록 완료");
 	}
 
 	// 진단서 ID에 대해서 등기부 조회
@@ -89,25 +72,40 @@ public class AssessmentController {
 	// 비회원에 대한 평가 api
 	@PostMapping("/guest")
 	public ResponseEntity<?> assessGuest(
-		@RequestParam(value = "latitude") Double latitude,
-		@RequestParam(value = "longitude") Double longitude,
-		@RequestParam(value = "price") Integer price,
-		@RequestPart("register_file") MultipartFile registerFile,
-		@RequestPart("contract_file") MultipartFile contractFile
+		@RequestPart(value = "house_info") HouseInfoRequest houseInfoRequest,
+		@RequestPart("register_file") MultipartFile registerFile
 	) {
-		System.out.println(latitude + " " + longitude + " " + price);
-		return ResponseEntity.ok().body("success");
+		HouseInfo houseInfo = HouseInfo.builder()
+				.address(houseInfoRequest.getAddress())
+				.area(houseInfoRequest.getArea())
+				.floor(houseInfoRequest.getFloor())
+				.isMember(false)
+				.latitude(houseInfoRequest.getLatitude())
+				.longitude(houseInfoRequest.getLongitude())
+				.price(houseInfoRequest.getPrice())
+				.build();
+		
+		AssessmentResponse assessmentResponse = assessmentService.assess(houseInfo);
+		return ResponseEntity.ok().body(assessmentResponse);
 	}
 	
 	@PostMapping("/member")
 	public ResponseEntity<?> assessMember(
-		@RequestParam(value = "latitude") Double latitude,
-		@RequestParam(value = "longitude") Double longitude,
-		@RequestParam(value = "price") Integer price,
-		@RequestPart("register_file") MultipartFile registerFile,
-		@RequestPart("contract_file") MultipartFile contractFile
+			@RequestPart(value = "house_info") HouseInfoRequest houseInfoRequest,
+			@RequestPart("register_file") MultipartFile registerFile
 	) {
-		log.info("member");
-		return ResponseEntity.ok().body("success");
+		HouseInfo houseInfo = HouseInfo.builder()
+				.address(houseInfoRequest.getAddress())
+				.area(houseInfoRequest.getArea())
+				.floor(houseInfoRequest.getFloor())
+				.latitude(houseInfoRequest.getLatitude())
+				.longitude(houseInfoRequest.getLongitude())
+				.price(houseInfoRequest.getPrice())
+				.isMember(true)
+				.build();
+		
+		AssessmentResponse assessmentResponse = assessmentService.assess(houseInfo);
+		return ResponseEntity.ok().body(assessmentResponse);
+
 	}
 }
