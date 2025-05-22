@@ -8,4 +8,5 @@ import lombok.Getter;
 public class AssessResult {
 	Boolean isSafe;
 	Long assessmentHouseId;
+	Double aroundAvgPrice;
 }

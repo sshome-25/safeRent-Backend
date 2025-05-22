@@ -174,6 +174,32 @@ public class GrokApiClient {
 			return alternativeMatcher.group(1).trim();
 		}
 
+		// 패턴 3: | key : 종류 | value |
+		// 예: | overallAssessment : 종합평가 | 본 등기부등본을 분석한 결과... |
+		Pattern thirdPattern = Pattern.compile("\\|\\s*" + key + "\\s*:\\s*[^|]+\\|\\s*([^|]+)\\s*\\|");
+		Matcher thirdMatcher = thirdPattern.matcher(content);
+
+		if (thirdMatcher.find()) {
+			return thirdMatcher.group(1).trim();
+		}
+
+		// 패턴 4: | key | value |
+		Pattern fourthPattern = Pattern.compile("\\|\\s*" + key + "\\s*\\|\\s*([^|]+)\\s*\\|");
+		Matcher fourthMatcher = fourthPattern.matcher(content);
+
+		if (fourthMatcher.find()) {
+			return fourthMatcher.group(1).trim();
+		}
+
+		// 패턴 5: |key:value|
+		// 예: |overallAssessment:안전함|
+		Pattern fifthPattern = Pattern.compile("\\|" + key + "\\:([^|]+)\\|");
+		Matcher fifthMatcher = fifthPattern.matcher(content);
+
+		if (fifthMatcher.find()) {
+			return fifthMatcher.group(1).trim();
+		}
+
 		return null;
 	}
 }
