@@ -13,9 +13,10 @@ import com.ssafy.safeRent.assessment.dto.model.AssessResult;
 import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
 import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
 import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
+import com.ssafy.safeRent.assessment.dto.model.Register;
+import com.ssafy.safeRent.assessment.dto.model.RegisterResult;
 import com.ssafy.safeRent.assessment.dto.model.Statistic;
 import com.ssafy.safeRent.assessment.dto.request.ContractRequest;
-import com.ssafy.safeRent.assessment.dto.request.RegisterRequest;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResponse;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
 import com.ssafy.safeRent.assessment.dto.response.RegisterAnalysisResponse;
@@ -36,22 +37,19 @@ public class AssessmentService {
 	@Value("${aws.s3.base-url}")
 	private String s3BaseUrl;
 
-	public AssessmentResponse assess(HouseInfo houseInfo) {
-		// TODO: 매물에 대한 진단
+	public AssessmentResponse assess(Long userId, HouseInfo houseInfo, MultipartFile registerFile) {
 		AssessResult assessResult = isPriceSafe(houseInfo);
+		RegisterResult registerResult = saveRegister(assessResult.getAssessmentHouseId(), registerFile);
+		if (userId != 0) {
+			assessmentRepository.saveAssessment(userId, registerResult.getRegisterId(), assessResult.getAssessmentHouseId());			
+		}
 
-		// TODO: 진단 결과 값 저장
-
-		// TODO: 전체 진단서 저장
-
-		// TODO: 진단 결과 반환
 		AssessmentResponse response = AssessmentResponse.builder()
 				.address(houseInfo.getAddress())
 				.latitude(houseInfo.getLatitude())
 				.longitude(houseInfo.getLongitude())
 				.isSafe(assessResult.getIsSafe())
-				.content(null)
-
+				.grokResult(registerResult.getGrokResponse())
 				.build();
 		return response;
 	}
@@ -87,7 +85,7 @@ public class AssessmentService {
 
 	// return registerId
 	@Transactional
-	public Long saveRegister(RegisterRequest registerRequest, MultipartFile registerFile) {
+	public RegisterResult saveRegister(Long assessmentId, MultipartFile registerFile) {
 
 		List<String> s3UrlList = new ArrayList<>();
 
@@ -102,7 +100,6 @@ public class AssessmentService {
 		// 2. api에 이미지 보내서 받은 String 응답 -> 파싱하기
 		// 3. 진단 테이블에 insert 하기.
 		List<String> finalS3UrlList = s3UrlList;
-		Long registerId = null;
 		AssessmentResult grokResponse = grokApiClient.analyzeRegisterImages(s3UrlList);
 
 		System.out.println(grokResponse.getOverallAssessment());
@@ -110,11 +107,13 @@ public class AssessmentService {
 		System.out.println(grokResponse.getSolution1());
 		System.out.println(grokResponse.getRiskFactor2());
 		System.out.println(grokResponse.getSolution2());
-		System.out.println();
 
 		// 등본 진단 결과 DB에 저장
-		return saveAssessmentData(registerRequest.getAssessmentId(), grokResponse, finalS3UrlList);
-
+		Long registerId = saveAssessmentData(assessmentId, grokResponse, finalS3UrlList);
+		return RegisterResult.builder()
+				.registerId(registerId)
+				.grokResponse(grokResponse)
+				.build();
 	}
 
 	public void saveContract(ContractRequest contractRequest) {
@@ -128,8 +127,6 @@ public class AssessmentService {
 
 	private Long saveAssessmentData(Long assessmentId, AssessmentResult grokResponse, List<String> s3UrlList) {
 
-		System.out.println(" save 메소드 진입");
-
 		// 1. analysis 테이블에 저장
 		Long analysisId = assessmentRepository.saveAnalysis(grokResponse);
 		if (analysisId == null) {
@@ -137,18 +134,20 @@ public class AssessmentService {
 		}
 
 		// 2. registers 테이블에 저장
-		Long registerId = assessmentRepository.saveRegister(analysisId);
+		Register register = Register.builder()
+				.analysisId(grokResponse.getId())
+				.build();
+		Long registerId = assessmentRepository.saveRegister(register);
 		if (registerId == null) {
 			throw new IllegalStateException("Failed to save register");
 		}
 
 		// 3. register_file_paths 테이블에 저장
 		for (String filePath : s3UrlList) {
-			assessmentRepository.saveRegisterFilePaths(filePath, registerId);
-
+			assessmentRepository.saveRegisterFilePaths(filePath, register.getId());
 		}
 
-		return registerId;
+		return register.getId();
 	}
 
 	public List<AssessmentResultResponse> getAssessResults(Long userId) {

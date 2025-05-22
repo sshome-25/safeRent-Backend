@@ -1,5 +1,7 @@
 package com.ssafy.safeRent.assessment.dto.response;
 
+import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,7 +16,6 @@ public class AssessmentResponse {
 	private Double longitude;
 	
 	private Boolean isSafe;
-	
 	// 평가 내용
-	private String content;
+	private AssessmentResult grokResult;
 }
