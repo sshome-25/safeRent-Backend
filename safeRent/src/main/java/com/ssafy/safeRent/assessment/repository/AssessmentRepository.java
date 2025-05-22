@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Update;
 
 import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
 import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
+import com.ssafy.safeRent.assessment.dto.model.Register;
 import com.ssafy.safeRent.assessment.dto.model.Statistic;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
 
@@ -25,17 +26,16 @@ public interface AssessmentRepository {
 
 	@Insert("INSERT INTO analysis (overall_assessment, risk_factor1, solution1, risk_factor2, solution2) "
 			+ "VALUES (#{overallAssessment}, #{riskFactor1}, #{solution1}, #{riskFactor2}, #{solution2})")
-	@Options(useGeneratedKeys = true, keyColumn = "analysis_id")
+	@Options(useGeneratedKeys = true, keyProperty = "id")
 	Long saveAnalysis(AssessmentResult assessmentResult);
 
 	@Insert("INSERT INTO registers (analysis_id) VALUES (#{analysisId})")
-	@Options(useGeneratedKeys = true, keyColumn = "register_id")
-	Long saveRegister(Long analysisId);
+	@Options(useGeneratedKeys = true, keyProperty = "id")
+	Long saveRegister(Register register);
 
 	@Insert("INSERT INTO register_file_paths (file_path, register_id) VALUES (#{filePath}, #{registerId})")
-	void saveRegisterFilePaths(String filePath, Long registerId);
+	void saveRegisterFilePaths(@Param("filePath") String filePath, @Param("registerId") Long registerId);
 
-	// =======
 	@Insert("insert into contracts ("
 			+ "analysis_id"
 			+ ") values ("
@@ -43,7 +43,6 @@ public interface AssessmentRepository {
 			+ ")")
 	void saveContract(Long analysisId);
 
-	// TODO: file query custom
 	@Select("SELECT "
 			+ "r.register_id,\r\n"
 			+ "an.analysis_id AS register_analysis_id, "
@@ -131,4 +130,15 @@ public interface AssessmentRepository {
 			"AND a.status = 'ACTIVE' " +
 			"AND ah.status = 'ACTIVE'")
 	List<AssessmentResultResponse> getAssessmentHousesByUserId(@Param("userId") Long userId);
+
+	@Insert("INSERT INTO assessments ("
+			+ "user_id, "
+			+ "register_id, "
+			+ "assessment_house_id"
+			+ ") VALUES ("
+			+ "#{userId}, "
+			+ "#{registerId},"
+			+ "#{assessmentHouseId}"
+			+ ")")
+	void saveAssessment(@Param("userId") Long userId, @Param("registerId") Long registerId, @Param("assessmentHouseId") Long assessmentHouseId);
 }

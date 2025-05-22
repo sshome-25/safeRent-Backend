@@ -7,17 +7,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
 import com.ssafy.safeRent.assessment.dto.request.HouseInfoRequest;
-import com.ssafy.safeRent.assessment.dto.response.RegisterAnalysisResponse;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResponse;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
-import com.ssafy.safeRent.assessment.dto.response.ContractAnalysisResponse;
 import com.ssafy.safeRent.assessment.service.AssessmentService;
 import com.ssafy.safeRent.user.dto.model.User;
 
@@ -53,13 +50,14 @@ public class AssessmentController {
 				.price(houseInfoRequest.getPrice())
 				.build();
 
-		AssessmentResponse assessmentResponse = assessmentService.assess(houseInfo);
+		AssessmentResponse assessmentResponse = assessmentService.assess(0L, houseInfo, registerFile);
 		return ResponseEntity.ok().body(assessmentResponse);
 
 	}
 
 	@PostMapping("/member")
 	public ResponseEntity<?> assessMember(
+			@AuthenticationPrincipal User user,
 			@RequestPart(value = "house_info") HouseInfoRequest houseInfoRequest,
 			@RequestPart("register_file") MultipartFile registerFile) {
 		HouseInfo houseInfo = HouseInfo.builder()
@@ -72,8 +70,7 @@ public class AssessmentController {
 				.isMember(true)
 				.build();
 
-		AssessmentResponse assessmentResponse = assessmentService.assess(houseInfo);
+		AssessmentResponse assessmentResponse = assessmentService.assess(user.getId(), houseInfo, registerFile);
 		return ResponseEntity.ok().body(assessmentResponse);
-
 	}
 }

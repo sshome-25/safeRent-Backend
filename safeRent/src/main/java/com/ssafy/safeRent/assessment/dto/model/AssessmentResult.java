@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AssessmentResult {
 
+	private Long id;
     private String overallAssessment;  // 종합평가
     private String riskFactor1;        // 발견된 위험요소1
     private String solution1;          // 해결방안1

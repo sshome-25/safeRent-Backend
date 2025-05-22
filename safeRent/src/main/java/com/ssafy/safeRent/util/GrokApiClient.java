@@ -176,7 +176,4 @@ public class GrokApiClient {
 
 		return null;
 	}
-
-
-
 }
