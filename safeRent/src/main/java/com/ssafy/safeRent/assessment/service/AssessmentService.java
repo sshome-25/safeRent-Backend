@@ -1,27 +1,23 @@
 package com.ssafy.safeRent.assessment.service;
 
-import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.safeRent.assessment.dto.model.AssessResult;
 import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
 import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
-import com.ssafy.safeRent.assessment.dto.Response.AssessmentResponse;
-import com.ssafy.safeRent.assessment.dto.Response.RegisterAnalysisResponse;
-import com.ssafy.safeRent.assessment.dto.model.Assessment;
 import com.ssafy.safeRent.assessment.dto.model.Statistic;
-import com.ssafy.safeRent.assessment.dto.request.AssessmentRequest;
 import com.ssafy.safeRent.assessment.dto.request.ContractRequest;
 import com.ssafy.safeRent.assessment.dto.request.RegisterRequest;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResponse;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
-import com.ssafy.safeRent.assessment.dto.response.ContractAnalysisResponse;
 import com.ssafy.safeRent.assessment.dto.response.RegisterAnalysisResponse;
 import com.ssafy.safeRent.assessment.repository.AssessmentRepository;
 import com.ssafy.safeRent.util.GrokApiClient;

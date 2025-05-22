@@ -2,28 +2,20 @@ package com.ssafy.safeRent.assessment.repository;
 
 import java.util.List;
 
-import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
 
-import com.ssafy.safeRent.assessment.dto.model.Assessment;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
 import com.ssafy.safeRent.assessment.dto.model.Statistic;
+import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
 
 @Mapper
 public interface AssessmentRepository {
-
-	@Insert("insert into assessments ("
-			+ "user_id, contract_id, register_id, assessment_house_id"
-			+ ") values ("
-			+ "#{userId},"
-			+ "#{assessmentHouseId}"
-			+ ")")
-	void saveAssessment(Assessment assessment);
 
 	@Update("update assessments "
 			+ "set "
