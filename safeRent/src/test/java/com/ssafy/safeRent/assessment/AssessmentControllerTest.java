@@ -27,12 +27,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.safeRent.assessment.controller.AssessmentController;
-import com.ssafy.safeRent.assessment.dto.Response.AssessmentResponse;
-import com.ssafy.safeRent.assessment.dto.Response.ContractAnalysisResponse;
-import com.ssafy.safeRent.assessment.dto.Response.RegisterAnalysisResponse;
 import com.ssafy.safeRent.assessment.dto.request.AssessmentRequest;
 import com.ssafy.safeRent.assessment.dto.request.ContractRequest;
 import com.ssafy.safeRent.assessment.dto.request.RegisterRequest;
+import com.ssafy.safeRent.assessment.dto.response.AssessmentResponse;
+import com.ssafy.safeRent.assessment.dto.response.ContractAnalysisResponse;
+import com.ssafy.safeRent.assessment.dto.response.RegisterAnalysisResponse;
 import com.ssafy.safeRent.assessment.service.AssessmentService;
 import com.ssafy.safeRent.user.dto.model.User;
 

@@ -1,6 +1,7 @@
 package com.ssafy.safeRent.assessment.repository;
 
-import com.ssafy.safeRent.assessment.dto.model.Statistic;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -9,7 +10,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
-import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
+import com.ssafy.safeRent.assessment.dto.model.Statistic;
+import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
 
 @Mapper
 public interface AssessmentRepository {
@@ -137,4 +139,22 @@ public interface AssessmentRepository {
 			+ ")")
 	@Options(useGeneratedKeys = true, keyProperty = "id")
 	Long saveAssessmentHouse(AssessmentHouse assessmentHouse);
+
+	@Select("SELECT ah.assessment_house_id as id, " +
+	        "ST_X(ah.location) as longitude, " +
+	        "ST_Y(ah.location) as latitude, " +
+	        "ah.price as price, " +
+	        "ah.market_price as market_price, " +
+	        "ah.area as area, " +
+	        "ah.floor as floor, " +
+	        "ah.created_at as createdAt, " +
+	        "ah.address as address, " +
+	        "ah.status as is_status, " +
+	        "ah.is_safe as is_safe" +
+	        "FROM assessment_houses ah " +
+	        "INNER JOIN assessments a ON ah.assessment_house_id = a.assessment_house_id " +
+	        "WHERE a.user_id = #{userId} " +
+	        "AND a.status = 'ACTIVE' " +
+	        "AND ah.status = 'ACTIVE'")
+	List<AssessmentResultResponse> getAssessmentHousesByUserId(@Param("userId") Long userId);
 }
