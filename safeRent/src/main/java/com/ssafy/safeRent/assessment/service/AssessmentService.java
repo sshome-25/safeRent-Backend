@@ -37,6 +37,7 @@ public class AssessmentService {
 	@Value("${aws.s3.base-url}")
 	private String s3BaseUrl;
 
+	@Transactional
 	public AssessmentResponse assess(Long userId, HouseInfo houseInfo, MultipartFile registerFile) {
 		AssessResult assessResult = isPriceSafe(houseInfo);
 		RegisterResult registerResult = saveRegister(assessResult.getAssessmentHouseId(), registerFile);
@@ -63,7 +64,7 @@ public class AssessmentService {
 		Integer marketPrice = statistic.getAvgPrice().intValue();
 
 		AssessmentHouse assessmentHouse = AssessmentHouse.builder()
-				.address(s3BaseUrl)
+				.address(houseInfo.getAddress())
 				.latitude(houseInfo.getLatitude())
 				.longitude(houseInfo.getLongitude())
 				.area(houseInfo.getArea())

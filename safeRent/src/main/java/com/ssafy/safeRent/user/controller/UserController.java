@@ -3,6 +3,7 @@ package com.ssafy.safeRent.user.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +38,16 @@ public class UserController {
     private final JwtTokenUtil jwtTokenUtil;
 	private final UserService userService;
 	private final PasswordEncoder passwordEncoder;
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(@AuthenticationPrincipal User user) {
+    	UserResponse userResponse = UserResponse.builder()
+    			.id(user.getId())
+    			.email(user.getEmail())
+    			.nickname(user.getNickname())
+    			.build();
+    	return ResponseEntity.ok(userResponse);
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest signupRequest) {
