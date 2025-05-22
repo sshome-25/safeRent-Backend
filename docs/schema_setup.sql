@@ -101,12 +101,27 @@ CREATE TABLE `favorites` (
 
 CREATE TABLE `analysis` (
                             `analysis_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분석 id',
-                            `summary`	TEXT	NOT NULL COMMENT '분석 내용 요약',
-                            `risk_degree`	TINYINT UNSIGNED NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
+                            `overallAssessment`	TEXT	NOT NULL COMMENT '종합평가',
+                            `riskFactor1`	TEXT	COMMENT '위험요소1',
+                            `solution1`	TEXT COMMENT '해결방안1',
+                            `riskFactor2`	TEXT COMMENT '위험요소2',
+                            `solution2`	TEXT COMMENT '해결방안2',
+#                             `risk_degree`	TINYINT UNSIGNED NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
                             `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '분석 생성시간',
                             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '분석 수정시간',
                             `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '분석 활성 상태'
 );
+
+ALTER TABLE analysis
+    CHANGE COLUMN summary overall_assessment TEXT,
+    ADD COLUMN risk_factor1 TEXT AFTER overall_assessment,
+    ADD COLUMN solution1 TEXT AFTER risk_factor1,
+    ADD COLUMN risk_factor2 TEXT AFTER solution1,
+    ADD COLUMN solution2 TEXT AFTER risk_factor2;
+
+ALTER TABLE analysis
+    DROP COLUMN risk_degree;
+
 
 CREATE TABLE `contracts` (
                              `contract_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '계약서 id',

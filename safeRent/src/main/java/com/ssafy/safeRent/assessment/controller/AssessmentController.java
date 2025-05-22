@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
 import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
 import com.ssafy.safeRent.assessment.dto.request.HouseInfoRequest;
+import com.ssafy.safeRent.assessment.dto.Response.RegisterAnalysisResponse;
 import com.ssafy.safeRent.assessment.dto.request.RegisterRequest;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResponse;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
@@ -25,7 +26,6 @@ import com.ssafy.safeRent.user.dto.model.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/assessments")
@@ -34,17 +34,13 @@ import reactor.core.publisher.Mono;
 public class AssessmentController {
 
 	private final AssessmentService assessmentService;
-	
-	@GetMapping("/health")
-	public ResponseEntity<?> healthCheck() {
-		return ResponseEntity.ok().body("health check");
-	}
 
 	// 등기부 등록
 	@PostMapping("/register")
-	public Mono<ResponseEntity<String>> saveRegister(@AuthenticationPrincipal User user,
 			@RequestPart("assessment_id") RegisterRequest registerRequest,
-			@RequestPart("register_file") MultipartFile registerFile) {
+	@RequestPart("register_file")
+	MultipartFile registerFile)
+	{
 
 		// 비동기 처리
 		return assessmentService.saveRegister(
@@ -72,19 +68,18 @@ public class AssessmentController {
 				.getContractAnalysis(user.getId(), contractId);
 		return ResponseEntity.ok().body(contractAnalysisResponse);
 	}
-	
+
 	@GetMapping
 	public ResponseEntity<?> getAssessment(@AuthenticationPrincipal User user) {
 		List<AssessmentResultResponse> results = assessmentService.getAssessResults(user.getId());
 		return ResponseEntity.ok().body(results);
 	}
-	
+
 	// 비회원에 대한 평가 api
 	@PostMapping("/guest")
 	public ResponseEntity<?> assessGuest(
-		@RequestPart(value = "house_info") HouseInfoRequest houseInfoRequest,
-		@RequestPart("register_file") MultipartFile registerFile
-	) {
+			@RequestPart(value = "house_info") HouseInfoRequest houseInfoRequest,
+			@RequestPart("register_file") MultipartFile registerFile) {
 		HouseInfo houseInfo = HouseInfo.builder()
 				.address(houseInfoRequest.getAddress())
 				.area(houseInfoRequest.getArea())
@@ -94,16 +89,15 @@ public class AssessmentController {
 				.longitude(houseInfoRequest.getLongitude())
 				.price(houseInfoRequest.getPrice())
 				.build();
-		
+
 		AssessmentResponse assessmentResponse = assessmentService.assess(houseInfo);
 		return ResponseEntity.ok().body(assessmentResponse);
+
 	}
-	
-	@PostMapping("/member")
+
 	public ResponseEntity<?> assessMember(
 			@RequestPart(value = "house_info") HouseInfoRequest houseInfoRequest,
-			@RequestPart("register_file") MultipartFile registerFile
-	) {
+			@RequestPart("register_file") MultipartFile registerFile) {
 		HouseInfo houseInfo = HouseInfo.builder()
 				.address(houseInfoRequest.getAddress())
 				.area(houseInfoRequest.getArea())
@@ -113,7 +107,7 @@ public class AssessmentController {
 				.price(houseInfoRequest.getPrice())
 				.isMember(true)
 				.build();
-		
+
 		AssessmentResponse assessmentResponse = assessmentService.assess(houseInfo);
 		return ResponseEntity.ok().body(assessmentResponse);
 
