@@ -8,19 +8,12 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import com.ssafy.safeRent.assessment.dto.model.Assessment;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
+import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
 
 @Mapper
 public interface AssessmentRepository {
-
-	@Insert("insert into assessments ("
-			+ "user_id, contract_id, register_id, assessment_house_id"
-			+ ") values ("
-			+ "#{userId},"
-			+ "#{assessmentHouseId}"
-			+ ");")
-	void saveAssessment(Assessment assessment);
-
+	
 	@Update("update assessments "
 			+ "set"
 			+ "register_id = #{registerId}"
@@ -124,4 +117,24 @@ public interface AssessmentRepository {
 	Statistic getAreaStatistics(@Param("latitude") Double latitude,
 		@Param("longitude") Double longitude,
 		@Param("area") Double area);
+	
+	@Insert("INSERT INTO assessment_houses ("
+			+ "location, "
+			+ "price, "
+			+ "market_price, "
+			+ "area, "
+			+ "floor, "
+			+ "address, "
+			+ "is_safe"
+			+ ") VALUES ("
+			+ "ST_SRID(POINT(#{longitude}, #{latitude}), 4326),"
+			+ "#{price}, "
+			+ "#{marketPrice}, "
+			+ "#{area}, "
+			+ "#{floor}, "
+			+ "#{address}, "
+			+ "#{isSafe}"
+			+ ")")
+	@Options(useGeneratedKeys = true, keyProperty = "id")
+	Long saveAssessmentHouse(AssessmentHouse assessmentHouse);
 }

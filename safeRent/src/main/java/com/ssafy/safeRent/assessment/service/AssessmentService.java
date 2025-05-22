@@ -12,7 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ssafy.safeRent.assessment.dto.Response.AssessmentResponse;
 import com.ssafy.safeRent.assessment.dto.Response.ContractAnalysisResponse;
 import com.ssafy.safeRent.assessment.dto.Response.RegisterAnalysisResponse;
-import com.ssafy.safeRent.assessment.dto.model.Assessment;
+import com.ssafy.safeRent.assessment.dto.model.AssessResult;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
+import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
 import com.ssafy.safeRent.assessment.dto.request.AssessmentRequest;
 import com.ssafy.safeRent.assessment.dto.request.ContractRequest;
 import com.ssafy.safeRent.assessment.dto.request.RegisterRequest;
@@ -34,18 +36,53 @@ public class AssessmentService {
 
 	@Value("${aws.s3.base-url}")
 	private String s3BaseUrl;
-
-	public AssessmentResponse gradeAssessment(AssessmentRequest assessmentRequest) {
-		Assessment assessment = Assessment.builder()
+	
+	public AssessmentResponse assess(HouseInfo houseInfo) {		
+		//TODO: 매물에 대한 진단
+		AssessResult assessResult = isPriceSafe(houseInfo);
+		
+		//TODO: 진단 결과 값 저장
+		
+		//TODO: 전체 진단서 저장
+		
+		//TODO: 진단 결과 반환
+		AssessmentResponse response = AssessmentResponse.builder()
+				.address(houseInfo.getAddress())
+				.latitude(houseInfo.getLatitude())
+				.longitude(houseInfo.getLongitude())
+				.isSafe(assessResult.getIsSafe())
+				.content(null)
 				.build();
-		assessmentRepository.saveAssessment(assessment);
-		return null;
+		return response;
 	}
 
-	public Integer guessPrice(Double latitude, Double longitude, Double area) {
-		Statistic statistic = assessmentRepository.getAreaStatistics(latitude, longitude, area);
-		System.out.println(statistic);
-		return null;
+	public AssessResult isPriceSafe(HouseInfo houseInfo) {
+		Statistic statistic = assessmentRepository.getAreaStatistics(
+				houseInfo.getLatitude(),
+				houseInfo.getLongitude(),
+				houseInfo.getArea()
+				);
+		Boolean isSafe = statistic.getAvgPrice() > houseInfo.getPrice();
+		Integer marketPrice = statistic.getAvgPrice().intValue();
+		
+		AssessmentHouse assessmentHouse = AssessmentHouse.builder()
+				.address(s3BaseUrl)
+				.latitude(houseInfo.getLatitude())
+				.longitude(houseInfo.getLongitude())
+				.area(houseInfo.getArea())
+				.price(houseInfo.getPrice())
+				.floor(houseInfo.getFloor())
+				.marketPrice(marketPrice)
+				.isSafe(isSafe)
+				.build();
+		
+		if (houseInfo.getIsMember()) {
+			assessmentRepository.saveAssessmentHouse(assessmentHouse);
+		}
+		return AssessResult.builder()
+				.isSafe(isSafe)
+				.assessmentHouseId(assessmentHouse.getId())
+				.build();
 	}
 
 	@Transactional
