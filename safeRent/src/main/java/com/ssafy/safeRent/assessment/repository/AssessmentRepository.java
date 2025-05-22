@@ -123,7 +123,7 @@ public interface AssessmentRepository {
 			"ah.created_at as createdAt, " +
 			"ah.address as address, " +
 			"ah.status as is_status, " +
-			"ah.is_safe as is_safe" +
+			"ah.is_safe as is_safe " +
 			"FROM assessment_houses ah " +
 			"INNER JOIN assessments a ON ah.assessment_house_id = a.assessment_house_id " +
 			"WHERE a.user_id = #{userId} " +
