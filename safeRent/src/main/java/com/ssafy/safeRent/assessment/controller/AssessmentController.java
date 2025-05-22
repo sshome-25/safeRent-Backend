@@ -1,5 +1,7 @@
 package com.ssafy.safeRent.assessment.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ssafy.safeRent.assessment.dto.Response.AssessmentResponse;
-import com.ssafy.safeRent.assessment.dto.Response.ContractAnalysisResponse;
-import com.ssafy.safeRent.assessment.dto.Response.RegisterAnalysisResponse;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentHouse;
 import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
 import com.ssafy.safeRent.assessment.dto.request.HouseInfoRequest;
 import com.ssafy.safeRent.assessment.dto.request.RegisterRequest;
+import com.ssafy.safeRent.assessment.dto.response.AssessmentResponse;
+import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
+import com.ssafy.safeRent.assessment.dto.response.ContractAnalysisResponse;
+import com.ssafy.safeRent.assessment.dto.response.RegisterAnalysisResponse;
 import com.ssafy.safeRent.assessment.service.AssessmentService;
 import com.ssafy.safeRent.user.dto.model.User;
 
@@ -67,6 +71,12 @@ public class AssessmentController {
 		ContractAnalysisResponse contractAnalysisResponse = assessmentService
 				.getContractAnalysis(user.getId(), contractId);
 		return ResponseEntity.ok().body(contractAnalysisResponse);
+	}
+	
+	@GetMapping
+	public ResponseEntity<?> getAssessment(@AuthenticationPrincipal User user) {
+		List<AssessmentResultResponse> results = assessmentService.getAssessResults(user.getId());
+		return ResponseEntity.ok().body(results);
 	}
 	
 	// 비회원에 대한 평가 api

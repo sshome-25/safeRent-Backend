@@ -1,4 +1,4 @@
-package com.ssafy.safeRent.assessment.dto.Response;
+package com.ssafy.safeRent.assessment.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
