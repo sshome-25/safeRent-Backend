@@ -10,6 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class AssessmentRequest {
-	private String location;
+	private Double latitude;
+	private Double longitude;
 	private Integer price;
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return latitude + " " + longitude + " " + price;
+	}
 }

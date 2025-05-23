@@ -1,68 +1,85 @@
 package com.ssafy.safeRent.assessment.controller;
 
-import org.springframework.http.MediaType;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.ssafy.safeRent.assessment.dto.Response.AssessmentResponse;
-import com.ssafy.safeRent.assessment.dto.Response.ContractAnalysisResponse;
-import com.ssafy.safeRent.assessment.dto.Response.RegisterAnalysisResponse;
-import com.ssafy.safeRent.assessment.dto.request.AssessmentRequest;
-import com.ssafy.safeRent.assessment.dto.request.ContractRequest;
-import com.ssafy.safeRent.assessment.dto.request.RegisterRequest;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
+import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
+import com.ssafy.safeRent.assessment.dto.request.HouseInfoRequest;
+import com.ssafy.safeRent.assessment.dto.response.AssessmentResponse;
+import com.ssafy.safeRent.assessment.dto.response.AssessmentResultResponse;
 import com.ssafy.safeRent.assessment.service.AssessmentService;
 import com.ssafy.safeRent.user.dto.model.User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/assessments")
+@Slf4j
 @RequiredArgsConstructor
 public class AssessmentController {
 
 	private final AssessmentService assessmentService;
-	
-	// 진단서 생성과 매뭉 가격, 위치 등록
-	@PostMapping
-	public ResponseEntity<?> gradeAssessment(@AuthenticationPrincipal User user, @RequestBody AssessmentRequest assessmentRequest) {
-		AssessmentResponse assessmentResponse = assessmentService.gradeAssessment(assessmentRequest);
-		return ResponseEntity.ok()
-				.body(assessmentResponse);
+
+	@GetMapping
+	public ResponseEntity<?> getAssessment(@AuthenticationPrincipal User user) {
+		List<AssessmentResultResponse> results = assessmentService.getAssessResults(user.getId());
+		return ResponseEntity.ok().body(results);
 	}
 
-	// 등기부 등록
-	@PostMapping("/register")
-	public ResponseEntity<?> saveRegister(@AuthenticationPrincipal User user, @RequestBody RegisterRequest registerRequest) {
-		assessmentService.saveRegister(registerRequest);
-		return ResponseEntity.ok("등록 완료");
+	@GetMapping("/analysis")
+	public ResponseEntity<?> getAnalysis(@AuthenticationPrincipal User user,
+			@RequestParam("analysis_id") Long analysisId) {
+		AssessmentResult ar = assessmentService.getAnalysisResults(analysisId);
+		return ResponseEntity.ok().body(ar);
 	}
 
-	// 계약서 등록
-	@PostMapping("/contract")
-	public ResponseEntity<?> saveContract(@AuthenticationPrincipal User user, @RequestBody ContractRequest contractRequest) {		
-		assessmentService.saveContract(contractRequest);
-		return ResponseEntity.ok("등록 완료");
+	// 비회원에 대한 평가 api
+	@PostMapping("/guest")
+	public ResponseEntity<?> assessGuest(
+			@RequestPart(value = "house_info") HouseInfoRequest houseInfoRequest,
+			@RequestPart("register_file") MultipartFile registerFile) {
+		HouseInfo houseInfo = HouseInfo.builder()
+				.address(houseInfoRequest.getAddress())
+				.area(houseInfoRequest.getArea())
+				.floor(houseInfoRequest.getFloor())
+				.isMember(false)
+				.latitude(houseInfoRequest.getLatitude())
+				.longitude(houseInfoRequest.getLongitude())
+				.price(houseInfoRequest.getPrice())
+				.build();
+
+		AssessmentResponse assessmentResponse = assessmentService.assess(0L, houseInfo, registerFile);
+		return ResponseEntity.ok().body(assessmentResponse);
+
 	}
 
-	// 진단서 ID에 대해서 등기부 조회
-	@GetMapping("/register")
-	public ResponseEntity<?> getRegisterAnalyze(@AuthenticationPrincipal User user,  @RequestParam("registerId") Long registerId) {
-		RegisterAnalysisResponse registerAnalysisResponse = assessmentService.getRegisterAnalysis(user.getId(), registerId);
-		return ResponseEntity.ok()
-				.body(registerAnalysisResponse);
-	}
+	@PostMapping("/member")
+	public ResponseEntity<?> assessMember(
+			@AuthenticationPrincipal User user,
+			@RequestPart(value = "house_info") HouseInfoRequest houseInfoRequest,
+			@RequestPart("register_file") MultipartFile registerFile) {
+		HouseInfo houseInfo = HouseInfo.builder()
+				.address(houseInfoRequest.getAddress())
+				.area(houseInfoRequest.getArea())
+				.floor(houseInfoRequest.getFloor())
+				.latitude(houseInfoRequest.getLatitude())
+				.longitude(houseInfoRequest.getLongitude())
+				.price(houseInfoRequest.getPrice())
+				.isMember(true)
+				.build();
 
-	// 진단서 ID에 대해서 계약서 조회
-	@GetMapping("/contract")
-	public ResponseEntity<?> getContractAnalyze(@AuthenticationPrincipal User user, @RequestParam("contractId") Long contractId) {
-		ContractAnalysisResponse contractAnalysisResponse = assessmentService.getContractAnalysis(user.getId(), contractId);
-		return ResponseEntity.ok()
-				.body(contractAnalysisResponse);
+		AssessmentResponse assessmentResponse = assessmentService.assess(user.getId(), houseInfo, registerFile);
+		return ResponseEntity.ok().body(assessmentResponse);
 	}
 }
