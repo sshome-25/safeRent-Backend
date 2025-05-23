@@ -156,18 +156,10 @@ public class GrokApiClient {
 	}
 
 	private static String extractKeyValue(String content, String key) {
-		// 패턴 6: | key : 라벨 | value | (라벨이 한글인 경우)
-		Pattern sixthPattern = Pattern.compile(
-				"\\|\\s*" + key + "\\s*:\\s*[^|]+\\|\\s*([^|]+)\\s*\\|");
-		Matcher sixthMatcher = sixthPattern.matcher(content);
-
-		if (sixthMatcher.find()) {
-			System.out.println("[extractKeyValue] 패턴6 매칭됨: " + key);
-			return sixthMatcher.group(1).trim();
-		}
 
 		// 패턴: | key : | value |
-		Pattern pattern = Pattern.compile("\\|\\s*" + key + "\\s*:\\s*\\|\\s*([^|]+)\\s*\\|");
+		Pattern pattern = Pattern.compile("\\|\\s*" + key +
+				"\\s*:\\s*\\|\\s*([^|]+)\\s*\\|");
 		Matcher matcher = pattern.matcher(content);
 
 		if (matcher.find()) {
@@ -176,7 +168,8 @@ public class GrokApiClient {
 		}
 
 		// 패턴: | key : value |
-		Pattern alternativePattern = Pattern.compile("\\|\\s*" + key + "\\s*:\\s*([^|]+)\\s*\\|");
+		Pattern alternativePattern = Pattern.compile("\\|\\s*" + key +
+				"\\s*:\\s*([^|]+)\\s*\\|");
 		Matcher alternativeMatcher = alternativePattern.matcher(content);
 
 		if (alternativeMatcher.find()) {
@@ -185,7 +178,8 @@ public class GrokApiClient {
 		}
 
 		// 패턴 3: | key : 종류 | value |
-		Pattern thirdPattern = Pattern.compile("\\|\\s*" + key + "\\s*:\\s*[^|]+\\|\\s*([^|]+)\\s*\\|");
+		Pattern thirdPattern = Pattern.compile("\\|\\s*" + key +
+				"\\s*:\\s*[^|]+\\|\\s*([^|]+)\\s*\\|");
 		Matcher thirdMatcher = thirdPattern.matcher(content);
 
 		if (thirdMatcher.find()) {
@@ -194,7 +188,8 @@ public class GrokApiClient {
 		}
 
 		// 패턴 4: | key | value |
-		Pattern fourthPattern = Pattern.compile("\\|\\s*" + key + "\\s*\\|\\s*([^|]+)\\s*\\|");
+		Pattern fourthPattern = Pattern.compile("\\|\\s*" + key +
+				"\\s*\\|\\s*([^|]+)\\s*\\|");
 		Matcher fourthMatcher = fourthPattern.matcher(content);
 
 		if (fourthMatcher.find()) {
@@ -209,6 +204,16 @@ public class GrokApiClient {
 		if (fifthMatcher.find()) {
 			System.out.println("[extractKeyValue] 패턴5 매칭됨: " + key);
 			return fifthMatcher.group(1).trim();
+		}
+
+		// 패턴 6: | key : 라벨 | value | (라벨이 한글인 경우)
+		Pattern sixthPattern = Pattern.compile(
+				"\\|\\s*" + key + "\\s*:\\s*[^|]+\\|\\s*([^|]+)\\s*\\|");
+		Matcher sixthMatcher = sixthPattern.matcher(content);
+
+		if (sixthMatcher.find()) {
+			System.out.println("[extractKeyValue] 패턴6 매칭됨: " + key);
+			return sixthMatcher.group(1).trim();
 		}
 
 		System.out.println("[extractKeyValue] 매칭 실패: " + key);
