@@ -75,7 +75,7 @@ public class UserController {
 
         final String token = jwtTokenUtil.generateToken(user.getEmail());
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(new JwtResponse(token, user.getId()));
     }
     
     private void authenticate(String email, String password) throws Exception {

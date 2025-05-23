@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.safeRent.board.dto.model.Post;
 import com.ssafy.safeRent.board.dto.request.CommentRequest;
+import com.ssafy.safeRent.board.dto.request.PostPatchRequest;
 import com.ssafy.safeRent.board.dto.request.PostRequest;
 import com.ssafy.safeRent.board.dto.response.CommentListResponse;
 import com.ssafy.safeRent.board.dto.response.PostListResponse;
@@ -37,7 +38,6 @@ public class BoardController {
   // 1. 게시글 목록 조회
   @GetMapping
   public ResponseEntity<?> getPostList(@RequestParam("page") Integer page, @RequestParam("category") String category) {
-	System.out.println(category);
     PostListResponse postListResponse = boardService.getPostList(page, category);
     return ResponseEntity.ok().body(postListResponse);
   }
@@ -59,7 +59,7 @@ public class BoardController {
   // 4. 게시글 수정
   @PatchMapping("/{post_id}")
   public ResponseEntity<?> updatePost(@AuthenticationPrincipal User user, @PathVariable("post_id") Long postId,
-      @Valid @RequestBody PostRequest request) {
+      @Valid @RequestBody PostPatchRequest request) {
     boardService.updatePost(user.getId(), postId, request);
     return ResponseEntity.ok("수정 완료");
   }
@@ -83,7 +83,6 @@ public class BoardController {
   public ResponseEntity<?> createComment(@AuthenticationPrincipal User user,
       @Valid @RequestBody CommentRequest request) {
     boardService.createComment(user.getId(), request);
-    System.out.println("as");
     return ResponseEntity.ok("등록 완료");
   }
 

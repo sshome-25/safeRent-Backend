@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ssafy.safeRent.board.dto.model.Comment;
 import com.ssafy.safeRent.board.dto.model.Post;
 import com.ssafy.safeRent.board.dto.request.CommentRequest;
+import com.ssafy.safeRent.board.dto.request.PostPatchRequest;
 import com.ssafy.safeRent.board.dto.request.PostRequest;
 import com.ssafy.safeRent.board.dto.response.CommentListResponse;
 import com.ssafy.safeRent.board.dto.response.PostListResponse;
@@ -57,7 +58,7 @@ public class BoardService {
   }
 
   // 4. 게시글 수정
-  public void updatePost(Long userId, Long postId, PostRequest request) {
+  public void updatePost(Long userId, Long postId, PostPatchRequest request) {
     Post existingPost = boardRepository.findPostById(postId);
     if (existingPost == null) {
       throw new IllegalArgumentException("Post not found with ID: " + postId);
@@ -73,7 +74,6 @@ public class BoardService {
         .preferRoomNum(request.getPreferRoomNum())
         .preferArea(request.getPreferArea())
         .isPark(request.getIsPark())
-        .commentCount(request.getCommentCount())
         .userId(userId)
         .build();
     boardRepository.updatePost(post);
