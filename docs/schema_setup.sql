@@ -67,6 +67,7 @@ CREATE TABLE `posts` (
                          `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
                          `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
                          `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '게시글 활성 상태',
+			 `category` VARCHAR(25) COMMENT '카테고리',
                          CONSTRAINT `fk_posts_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
                          CONSTRAINT `fk_posts_houses` FOREIGN KEY (`traded_house_id`) REFERENCES `traded_houses`(`traded_house_id`) ON DELETE SET NULL ON UPDATE CASCADE,
                          CONSTRAINT `chk_view_positive` CHECK (`view_count` >= 0)
