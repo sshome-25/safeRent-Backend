@@ -66,7 +66,7 @@ npm run migrate
 npm run dev
 ```
 
-### 환경 변수 설정
+### 환경 변수 설정(application.properties)
 
 ```env
 # Database
