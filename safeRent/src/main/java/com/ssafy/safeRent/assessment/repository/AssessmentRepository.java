@@ -29,6 +29,26 @@ public interface AssessmentRepository {
 	@Options(useGeneratedKeys = true, keyProperty = "id")
 	Long saveAnalysis(AssessmentResult assessmentResult);
 
+	@Select("SELECT " +
+			"a.analysis_id, " +
+			"a.overall_assessment, " +
+			"a.risk_factor_1, " +
+			"a.solution_1, " +
+			"a.risk_factor_2, " +
+			"a.solution_2, " +
+			"a.created_at, " +
+			"a.updated_at, " +
+			"a.status, " +
+			"ah.price, " +
+			"ah.market_price AS market_price " +
+			"FROM analysis a " +
+			"INNER JOIN registers r ON a.analysis_id = r.analysis_id " +
+			"INNER JOIN assessments s ON r.register_id = s.register_id " +
+			"INNER JOIN assessment_houses ah ON s.assessment_house_id = ah.assessment_house_id " +
+			"WHERE a.analysis_id = #{analysisId} " +
+			"LIMIT 1")
+	AssessmentResult getAnalysisById(Long analysisId);
+
 	@Insert("INSERT INTO registers (analysis_id) VALUES (#{analysisId})")
 	@Options(useGeneratedKeys = true, keyProperty = "id")
 	Long saveRegister(Register register);
@@ -123,9 +143,11 @@ public interface AssessmentRepository {
 			"ah.created_at as createdAt, " +
 			"ah.address as address, " +
 			"ah.status as is_status, " +
-			"ah.is_safe as is_safe " +
+			"ah.is_safe as is_safe, " +
+			"r.analysis_id as analysis_id " +
 			"FROM assessment_houses ah " +
-			"INNER JOIN assessments a ON ah.assessment_house_id = a.assessment_house_id " +
+			"INNER JOIN assessments a ON ah.assessment_house_id = a.assessment_house_id  " +
+			"INNER JOIN registers r ON a.register_id = r.register_id " +
 			"WHERE a.user_id = #{userId} " +
 			"AND a.status = 'ACTIVE' " +
 			"AND ah.status = 'ACTIVE'")

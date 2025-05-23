@@ -39,7 +39,6 @@ public class GrokApiClient {
 				.build();
 	}
 
-//	public Mono<String> analyzeRegisterImages(List<String> s3UrlList) {
 	public AssessmentResult analyzeRegisterImages(List<String> s3UrlList) {
 		long startTime = System.currentTimeMillis();
 
@@ -58,20 +57,20 @@ public class GrokApiClient {
 				.collect(Collectors.joining(","));
 
 		// 텍스트 프롬프트에서 제어 문자 제거
-//		String textPrompt = sanitizeString(
-//				"전세사기를 피하고 싶은 구매자의 관점에서 내가 보낸 등기부등본 이미지를 보고 이미지 속 정보들을 근거로 해서"
-//						+ "유의해야 할 사항들 알려줘 (소유자가 최근에 변경되었는지 여부 판단, 소유자가 단독 소유인지, 공동 소유인지 확인, "
-//						+ "근저당권, 전세권, 가압류, 경매 확인, 임차인이 실제로 거주하고 있는지, 임대차 계약이 유효한지, "
-//						+ "등기부등본이 최신인지 여부를 이미지를 보고 판단한 결과를 포함시켜줘)");
+		// String textPrompt = sanitizeString(
+		// "전세사기를 피하고 싶은 구매자의 관점에서 내가 보낸 등기부등본 이미지를 보고 이미지 속 정보들을 근거로 해서"
+		// + "유의해야 할 사항들 알려줘 (소유자가 최근에 변경되었는지 여부 판단, 소유자가 단독 소유인지, 공동 소유인지 확인, "
+		// + "근저당권, 전세권, 가압류, 경매 확인, 임차인이 실제로 거주하고 있는지, 임대차 계약이 유효한지, "
+		// + "등기부등본이 최신인지 여부를 이미지를 보고 판단한 결과를 포함시켜줘)");
 
 		String textPrompt = sanitizeString(
-			"전세사기를 피하고 싶은 구매자의 관점에서 내가 보낸 등기부등본 이미지를 보고 이미지 속 정보들을 근거로 해서 등본을 분석해줘."
-				+ "답변은 key와 value 값으로 짝지어지게 답변해주고, key값과 value 사이에 :를 넣고, 각 key와 value 쌍 앞뒤로 |를 넣어서 구분해줘."
-				+"key값으로 꼭 들어가야 할 것은 종합평가, 발견된 위험요소1, 해결방안1, 발견된 위험요소2, 해결방안2로 총 5개야."
-				+ "각각의 key 값은 overallAssessment, riskFactor1, solution1, riskFactor2, solution2로 답변해줘.");
-//				+ "소유자가 최근에 변경되었는지 여부 판단, 소유자가 단독 소유인지, 공동 소유인지 확인, "
-//				+ "근저당권, 전세권, 가압류, 경매 확인, 임차인이 실제로 거주하고 있는지, 임대차 계약이 유효한지, "
-//				+ "등기부등본이 최신인지를 확인해서 나온 발견된 위험요소와 해결방안을 짝지어서 답변해줘. ");
+				"전세사기를 피하고 싶은 구매자의 관점에서 내가 보낸 등기부등본 이미지를 보고 이미지 속 정보들을 근거로 해서 등본을 분석해줘."
+						+ "답변은 key와 value 값으로 짝지어지게 답변해주고, key값과 value 사이에 :를 넣고, 각 key와 value 쌍 앞뒤로 |를 넣어서 구분해줘."
+						+ "key값으로 꼭 들어가야 할 것은 종합평가, 발견된 위험요소1, 해결방안1, 발견된 위험요소2, 해결방안2로 총 5개야."
+						+ "각각의 key 값은 overallAssessment, riskFactor1, solution1, riskFactor2, solution2로 답변해줘.");
+		// + "소유자가 최근에 변경되었는지 여부 판단, 소유자가 단독 소유인지, 공동 소유인지 확인, "
+		// + "근저당권, 전세권, 가압류, 경매 확인, 임차인이 실제로 거주하고 있는지, 임대차 계약이 유효한지, "
+		// + "등기부등본이 최신인지를 확인해서 나온 발견된 위험요소와 해결방안을 짝지어서 답변해줘. ");
 
 		String requestBody = String
 				.format("{\"model\":\"grok-2-vision-1212\",\"messages\":["
@@ -85,27 +84,27 @@ public class GrokApiClient {
 		// JSON 형식 검증
 		validateJson(requestBody);
 		System.out.println(" webClient\n"
-			+ "\t\t\t\t.post()");
+				+ "\t\t\t\t.post()");
 
 		return webClient
-		.post()
-		.contentType(MediaType.APPLICATION_JSON)
+				.post()
+				.contentType(MediaType.APPLICATION_JSON)
 				.bodyValue(requestBody)
 				.retrieve()
 				.bodyToMono(String.class)
 				.doOnNext(response -> {
-		long endTime = System.currentTimeMillis();
-		System.out.println("Grok API Response: " + response);
-		System.out.println("analyzePropertyImages() execution time: " + (endTime - startTime) + " ms");
+					long endTime = System.currentTimeMillis();
+					System.out.println("Grok API Response: " + response);
+					System.out.println("analyzePropertyImages() execution time: " + (endTime - startTime) + " ms");
 
-	}).map(response -> extractKeyValues(response)) // 응답을 변환
-		.onErrorMap(e -> {
-		System.out.println(e.getMessage());
-		return new RuntimeException(
-			"Failed to call Grok API: " + e.getMessage() + ", Cause: " + e.getCause(),
-			e);
-	}).block();
-}
+				}).map(response -> extractKeyValues(response)) // 응답을 변환
+				.onErrorMap(e -> {
+					System.out.println(e.getMessage());
+					return new RuntimeException(
+							"Failed to call Grok API: " + e.getMessage() + ", Cause: " + e.getCause(),
+							e);
+				}).block();
+	}
 
 	private String sanitizeString(String input) {
 		if (input == null) {
@@ -134,10 +133,10 @@ public class GrokApiClient {
 
 			// content 부분 추출
 			String content = rootNode.path("choices")
-				.path(0)
-				.path("message")
-				.path("content")
-				.asText();
+					.path(0)
+					.path("message")
+					.path("content")
+					.asText();
 
 			// 마크다운 코드 블록 제거
 			content = content.replaceAll("``````", "").trim();
@@ -157,29 +156,40 @@ public class GrokApiClient {
 	}
 
 	private static String extractKeyValue(String content, String key) {
+		// 패턴 6: | key : 라벨 | value | (라벨이 한글인 경우)
+		Pattern sixthPattern = Pattern.compile(
+				"\\|\\s*" + key + "\\s*:\\s*[^|]+\\|\\s*([^|]+)\\s*\\|");
+		Matcher sixthMatcher = sixthPattern.matcher(content);
+
+		if (sixthMatcher.find()) {
+			System.out.println("[extractKeyValue] 패턴6 매칭됨: " + key);
+			return sixthMatcher.group(1).trim();
+		}
+
 		// 패턴: | key : | value |
 		Pattern pattern = Pattern.compile("\\|\\s*" + key + "\\s*:\\s*\\|\\s*([^|]+)\\s*\\|");
 		Matcher matcher = pattern.matcher(content);
 
 		if (matcher.find()) {
+			System.out.println("[extractKeyValue] 패턴1 매칭됨: " + key);
 			return matcher.group(1).trim();
 		}
 
-		// 첫 번째 패턴이 실패하면 다른 패턴도 시도
 		// 패턴: | key : value |
 		Pattern alternativePattern = Pattern.compile("\\|\\s*" + key + "\\s*:\\s*([^|]+)\\s*\\|");
 		Matcher alternativeMatcher = alternativePattern.matcher(content);
 
 		if (alternativeMatcher.find()) {
+			System.out.println("[extractKeyValue] 패턴2 매칭됨: " + key);
 			return alternativeMatcher.group(1).trim();
 		}
 
 		// 패턴 3: | key : 종류 | value |
-		// 예: | overallAssessment : 종합평가 | 본 등기부등본을 분석한 결과... |
 		Pattern thirdPattern = Pattern.compile("\\|\\s*" + key + "\\s*:\\s*[^|]+\\|\\s*([^|]+)\\s*\\|");
 		Matcher thirdMatcher = thirdPattern.matcher(content);
 
 		if (thirdMatcher.find()) {
+			System.out.println("[extractKeyValue] 패턴3 매칭됨: " + key);
 			return thirdMatcher.group(1).trim();
 		}
 
@@ -188,18 +198,21 @@ public class GrokApiClient {
 		Matcher fourthMatcher = fourthPattern.matcher(content);
 
 		if (fourthMatcher.find()) {
+			System.out.println("[extractKeyValue] 패턴4 매칭됨: " + key);
 			return fourthMatcher.group(1).trim();
 		}
 
 		// 패턴 5: |key:value|
-		// 예: |overallAssessment:안전함|
 		Pattern fifthPattern = Pattern.compile("\\|" + key + "\\:([^|]+)\\|");
 		Matcher fifthMatcher = fifthPattern.matcher(content);
 
 		if (fifthMatcher.find()) {
+			System.out.println("[extractKeyValue] 패턴5 매칭됨: " + key);
 			return fifthMatcher.group(1).trim();
 		}
 
+		System.out.println("[extractKeyValue] 매칭 실패: " + key);
 		return null;
 	}
+
 }

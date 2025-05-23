@@ -42,7 +42,7 @@ public class AssessmentService {
 		AssessResult assessResult = isPriceSafe(houseInfo);
 		RegisterResult registerResult = saveRegister(assessResult.getAssessmentHouseId(), registerFile);
 		if (userId != 0) {
-			assessmentRepository.saveAssessment(userId, registerResult.getRegisterId(), assessResult.getAssessmentHouseId());			
+			assessmentRepository.saveAssessment(userId, registerResult.getRegisterId(), assessResult.getAssessmentHouseId());
 		}
 
 		AssessmentResponse response = AssessmentResponse.builder()
@@ -155,5 +155,10 @@ public class AssessmentService {
 
 	public List<AssessmentResultResponse> getAssessResults(Long userId) {
 		return assessmentRepository.getAssessmentHousesByUserId(userId);
+	}
+
+	// 진단 결과 출력하는데 필요한 데이터 갖고옴
+	public AssessmentResult getAnalysisResults(Long analysisId) {
+		return assessmentRepository.getAnalysisById(analysisId);
 	}
 }
