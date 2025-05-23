@@ -12,7 +12,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class HouseListRequest {
-  private String lat;
-  private String longi;
-  private Integer page;
+  private Double swLat;
+  private Double swLng;
+  private Double neLat;
+  private Double neLng;
+  private Integer limit;
+
+  @Override
+  public String toString() {
+    return swLat + " " + swLng + " " + neLat + " " + neLng + " " + limit;
+  }
 }

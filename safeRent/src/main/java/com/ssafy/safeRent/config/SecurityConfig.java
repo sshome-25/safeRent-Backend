@@ -41,6 +41,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/user/login").permitAll()
                     .requestMatchers("/api/assessments/health").permitAll()
                     .requestMatchers("/api/user/guest-token").permitAll()
+                    .requestMatchers("/api/recommend/list").permitAll()
                     .anyRequest().authenticated());
         
         // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
