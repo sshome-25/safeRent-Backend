@@ -12,15 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class House {
-  private Long tradedHouseId;
-  private String name;
+  private Long id;
   private String price;
-  private String area;
-  private String builtYear;
-  private String floor;
-  private String address;
-  private Integer order; // 인프라가 많은 순
-  private Double distance; // 가장 가까운 인프라까지와의 거리
-  // private String lat;
-  // private String longi;
+  private Double latitude;
+  private Double longitude;
 }

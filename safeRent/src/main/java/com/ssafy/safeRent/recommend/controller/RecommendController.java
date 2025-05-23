@@ -41,17 +41,17 @@ public class RecommendController {
     return recommendService.getHouseDetail(houseId);
   }
 
-  // 3. 추천 매물 조회
-  @GetMapping("/recommended")
-  public HouseListResponse getRecommendedHouses(@Valid @ModelAttribute RecommendedHouseRequest request) {
-    try {
-      Infras.valueOf(request.getInfra().toUpperCase());
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException(
-          "Invalid infra value: " + request.getInfra() + ". Must be one of: " + Infras.values());
-    }
-    return recommendService.getRecommendedHouses(request);
-  }
+//  // 3. 추천 매물 조회
+//  @GetMapping("/recommended")
+//  public HouseListResponse getRecommendedHouses(@Valid @ModelAttribute RecommendedHouseRequest request) {
+//    try {
+//      Infras.valueOf(request.getInfra().toUpperCase());
+//    } catch (IllegalArgumentException e) {
+//      throw new IllegalArgumentException(
+//          "Invalid infra value: " + request.getInfra() + ". Must be one of: " + Infras.values());
+//    }
+//    return recommendService.getRecommendedHouses(request);
+//  }
 
   // 4. 매물 관심목록 추가
   @PostMapping("/favorites")
