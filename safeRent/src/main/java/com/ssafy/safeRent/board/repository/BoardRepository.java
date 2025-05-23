@@ -71,8 +71,8 @@ public interface BoardRepository {
         List<Comment> findCommentsByPostId(Long postId);
 
         // 7. 댓글 등록
-        @Insert("INSERT INTO comments (parent_comment_id, user_id, post_id, traded_house_id, content) " +
-                        "VALUES (#{parentCommentId}, #{userId}, #{postId}, #{houseId}, #{content})")
+        @Insert("INSERT INTO comments (user_id, post_id, content) " +
+                        "VALUES (#{userId}, #{postId}, #{content})")
         @Options(useGeneratedKeys = true, keyProperty = "commentId")
         void insertComment(Comment comment);
 
