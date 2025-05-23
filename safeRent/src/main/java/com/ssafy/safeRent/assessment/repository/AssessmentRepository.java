@@ -24,7 +24,7 @@ public interface AssessmentRepository {
 			+ "post_id = #{assessmentId} and status = 'ACTIVE'")
 	void updateAssessmentRegister(Long registerId, Long assessmentId);
 
-	@Insert("INSERT INTO analysis (overall_assessment, risk_factor1, solution1, risk_factor2, solution2) "
+	@Insert("INSERT INTO analysis (overall_assessment, risk_factor_1, solution_1, risk_factor_2, solution_2) "
 			+ "VALUES (#{overallAssessment}, #{riskFactor1}, #{solution1}, #{riskFactor2}, #{solution2})")
 	@Options(useGeneratedKeys = true, keyProperty = "id")
 	Long saveAnalysis(AssessmentResult assessmentResult);
@@ -140,5 +140,6 @@ public interface AssessmentRepository {
 			+ "#{registerId},"
 			+ "#{assessmentHouseId}"
 			+ ")")
-	void saveAssessment(@Param("userId") Long userId, @Param("registerId") Long registerId, @Param("assessmentHouseId") Long assessmentHouseId);
+	void saveAssessment(@Param("userId") Long userId, @Param("registerId") Long registerId,
+			@Param("assessmentHouseId") Long assessmentHouseId);
 }

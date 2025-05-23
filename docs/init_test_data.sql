@@ -5,7 +5,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- 기존 데이터 삭제
 TRUNCATE TABLE register_file_paths;  -- registers 참조
-TRUNCATE TABLE contract_file_paths;  -- contracts 참조
 TRUNCATE TABLE assessment_houses;    -- assessments, traded_houses 참조
 TRUNCATE TABLE analysis;             -- users, traded_houses 참조
 TRUNCATE TABLE favorites;            -- users, traded_houses 참조
@@ -13,7 +12,6 @@ TRUNCATE TABLE comments;             -- users, posts, traded_houses 참조
 TRUNCATE TABLE posts;                -- users, traded_houses 참조
 TRUNCATE TABLE assessments;          -- contracts, registers, users 참조
 TRUNCATE TABLE registers;            -- users, traded_houses 참조
-TRUNCATE TABLE contracts;            -- users, traded_houses 참조
 TRUNCATE TABLE traded_houses;        -- users 참조
 TRUNCATE TABLE users;                -- roles 참조
 TRUNCATE TABLE roles;                -- 최상위 부모
@@ -155,11 +153,11 @@ LIMIT 100;
 
 -- 분석 정보 랜덤 데이터 100건 삽입
 INSERT INTO analysis (
-    overallAssessment,
-    riskFactor1,
-    solution1,
-    riskFactor2,
-    solution2
+    overall_assessment,
+    risk_factor_1,
+    solution_1,
+    risk_factor_2,
+    solution_2
 )
 SELECT
     CONCAT(
@@ -167,31 +165,15 @@ SELECT
         ELT(FLOOR(1 + (RAND() * 3)), '일반적인 시세와 비슷합니다.', '시세보다 약간 높은 편입니다.', '시세보다 낮은 편입니다.'),
         ' 계약서 검토 결과 ',
         ELT(FLOOR(1 + (RAND() * 3)), '특별한 위험 요소는 발견되지 않았습니다.', '몇 가지 확인이 필요한 조항이 있습니다.', '주의가 필요한 내용이 포함되어 있습니다.')
-    ) AS overallAssessment,
-    ELT(FLOOR(1 + (RAND() * 4)), '위험요소 없음', '근저당권 설정', '소유자 변경 이력 있음', '임차인 거주 불명확') AS riskFactor1,
-    ELT(FLOOR(1 + (RAND() * 4)), '별도의 해결방안 필요 없음', '근저당권 말소 확인 필요', '소유자 변경 사유 확인', '임차인 실거주 여부 확인') AS solution1,
-    ELT(FLOOR(1 + (RAND() * 4)), '추가 위험요소 없음', '전세권 설정', '가압류 존재', '권리관계 확인 필요') AS riskFactor2,
-    ELT(FLOOR(1 + (RAND() * 4)), '별도의 해결방안 필요 없음', '전세권 말소 확인 필요', '가압류 해소 필요', '권리관계 서류 확인 필요') AS solution2
+    ) AS overall_assessment,
+    ELT(FLOOR(1 + (RAND() * 4)), '위험요소 없음', '근저당권 설정', '소유자 변경 이력 있음', '임차인 거주 불명확') AS risk_factor_1,
+    ELT(FLOOR(1 + (RAND() * 4)), '별도의 해결방안 필요 없음', '근저당권 말소 확인 필요', '소유자 변경 사유 확인', '임차인 실거주 여부 확인') AS solution_1,
+    ELT(FLOOR(1 + (RAND() * 4)), '추가 위험요소 없음', '전세권 설정', '가압류 존재', '권리관계 확인 필요') AS risk_factor_2,
+    ELT(FLOOR(1 + (RAND() * 4)), '별도의 해결방안 필요 없음', '전세권 말소 확인 필요', '가압류 해소 필요', '권리관계 서류 확인 필요') AS solution_2
 FROM
     INFORMATION_SCHEMA.TABLES
 LIMIT 100;
 
--- 계약서 정보 삽입
-INSERT INTO contracts (analysis_id)
-SELECT 
-    analysis_id
-FROM 
-    analysis
-LIMIT 100;
-
--- 계약서 파일 경로 삽입
-INSERT INTO contract_file_paths (file_path, contract_id)
-SELECT 
-    CONCAT('/uploads/contracts/', contract_id, '_', DATE_FORMAT(NOW(), '%Y%m%d'), '.pdf'),
-    contract_id
-FROM 
-    contracts
-LIMIT 100;
 
 -- 등본 정보 삽입
 INSERT INTO registers (analysis_id)

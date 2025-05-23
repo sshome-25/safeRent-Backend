@@ -101,32 +101,17 @@ CREATE TABLE `favorites` (
 
 CREATE TABLE `analysis` (
                             `analysis_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분석 id',
-                            `overallAssessment`	TEXT	NOT NULL COMMENT '종합평가',
-                            `riskFactor1`	TEXT	COMMENT '위험요소1',
-                            `solution1`	TEXT COMMENT '해결방안1',
-                            `riskFactor2`	TEXT COMMENT '위험요소2',
-                            `solution2`	TEXT COMMENT '해결방안2',
+                            `overall_assessment`	TEXT	NOT NULL COMMENT '종합평가',
+                            `risk_factor_1`	TEXT	COMMENT '위험요소1',
+                            `solution_1`	TEXT COMMENT '해결방안1',
+                            `risk_factor_2`	TEXT COMMENT '위험요소2',
+                            `solution_2`	TEXT COMMENT '해결방안2',
                             `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '분석 생성시간',
                             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '분석 수정시간',
                             `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '분석 활성 상태'
 );
 
 
-CREATE TABLE `contracts` (
-                             `contract_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '계약서 id',
-                             `analysis_id`	BIGINT	NOT NULL COMMENT '분석 결과 id',
-                             `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
-                             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
-                             `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '계약서 활성 상태',
-                             CONSTRAINT `fk_contracts_analysis` FOREIGN KEY (`analysis_id`) REFERENCES `analysis`(`analysis_id`) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE `contract_file_paths` (
-                                       `contract_path_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                                       `file_path`	VARCHAR(255)	NOT NULL,
-                                       `contract_id`	BIGINT	NOT NULL,
-                                       CONSTRAINT `fk_contract_file_paths_contracts` FOREIGN KEY (`contract_id`) REFERENCES `contracts`(`contract_id`) ON DELETE CASCADE ON UPDATE CASCADE
-); 
 
 CREATE TABLE `assessment_houses` (
                                      `assessment_house_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
