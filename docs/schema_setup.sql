@@ -32,7 +32,7 @@ CREATE TABLE `users` (
                          `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
                          `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '유저 활성 상태',
                          `nickname`	varchar(255) UNIQUE NOT NULL COMMENT '유저 닉네임',
-                         `role_id`	TINYINT	NOT NULL COMMENT '유저 권한',
+                         `role_id`	TINYINT	NOT NULL DEFAULT 2 COMMENT  '유저 권한',
                          CONSTRAINT `fk_users_roles` FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -101,43 +101,17 @@ CREATE TABLE `favorites` (
 
 CREATE TABLE `analysis` (
                             `analysis_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분석 id',
-                            `overallAssessment`	TEXT	NOT NULL COMMENT '종합평가',
-                            `riskFactor1`	TEXT	COMMENT '위험요소1',
-                            `solution1`	TEXT COMMENT '해결방안1',
-                            `riskFactor2`	TEXT COMMENT '위험요소2',
-                            `solution2`	TEXT COMMENT '해결방안2',
-#                             `risk_degree`	TINYINT UNSIGNED NOT NULL COMMENT '위험도 0:안전 커질수록 위험',
+                            `overall_assessment`	TEXT	NOT NULL COMMENT '종합평가',
+                            `risk_factor_1`	TEXT	COMMENT '위험요소1',
+                            `solution_1`	TEXT COMMENT '해결방안1',
+                            `risk_factor_2`	TEXT COMMENT '위험요소2',
+                            `solution_2`	TEXT COMMENT '해결방안2',
                             `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '분석 생성시간',
                             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '분석 수정시간',
                             `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '분석 활성 상태'
 );
 
-ALTER TABLE analysis
-    CHANGE COLUMN summary overall_assessment TEXT,
-    ADD COLUMN risk_factor1 TEXT AFTER overall_assessment,
-    ADD COLUMN solution1 TEXT AFTER risk_factor1,
-    ADD COLUMN risk_factor2 TEXT AFTER solution1,
-    ADD COLUMN solution2 TEXT AFTER risk_factor2;
 
-ALTER TABLE analysis
-    DROP COLUMN risk_degree;
-
-
-CREATE TABLE `contracts` (
-                             `contract_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '계약서 id',
-                             `analysis_id`	BIGINT	NOT NULL COMMENT '분석 결과 id',
-                             `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
-                             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
-                             `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '계약서 활성 상태',
-                             CONSTRAINT `fk_contracts_analysis` FOREIGN KEY (`analysis_id`) REFERENCES `analysis`(`analysis_id`) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE `contract_file_paths` (
-                                       `contract_path_id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                                       `file_path`	VARCHAR(255)	NOT NULL,
-                                       `contract_id`	BIGINT	NOT NULL,
-                                       CONSTRAINT `fk_contract_file_paths_contracts` FOREIGN KEY (`contract_id`) REFERENCES `contracts`(`contract_id`) ON DELETE CASCADE ON UPDATE CASCADE
-);
 
 CREATE TABLE `assessment_houses` (
                                      `assessment_house_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '집 id',
@@ -150,7 +124,7 @@ CREATE TABLE `assessment_houses` (
                                      `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
                                      `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
                                      `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태',
-									 `is_safe` BOOLEAN NOT NULL COMMENT '깡통 판단',
+									 `is_safe` BOOLEAN NOT NULL COMMENT '깡통 전세 여부 판단',
                                      SPATIAL INDEX idx_location (location)
 );
 
@@ -172,16 +146,13 @@ CREATE TABLE `register_file_paths` (
 
 CREATE TABLE `assessments` (
                                `assessment_id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '진단서 id',
-                               `completeness`	TINYINT UNSIGNED NOT NULL COMMENT '진단 진행도',
                                `user_id`	BIGINT	NOT NULL COMMENT '유저 id',
-                               `contract_id`	BIGINT	NOT NULL COMMENT '계약서 id',
                                `register_id`	BIGINT	NOT NULL COMMENT '등본 id',
                                `assessment_house_id`	BIGINT	NOT NULL COMMENT '진단 집 id',
                                `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '유저 생성시간',
                                `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '유저 수정시간',
                                `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE' COMMENT '진단서 활성 상태',
                                CONSTRAINT `fk_assessments_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                               CONSTRAINT `fk_assessments_contracts` FOREIGN KEY (`contract_id`) REFERENCES `contracts`(`contract_id`) ON DELETE CASCADE ON UPDATE CASCADE,
                                CONSTRAINT `fk_assessments_registers` FOREIGN KEY (`register_id`) REFERENCES `registers`(`register_id`) ON DELETE CASCADE ON UPDATE CASCADE,
                                CONSTRAINT `fk_assessments_assessment_houses` FOREIGN KEY (`assessment_house_id`) REFERENCES `assessment_houses`(`assessment_house_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
