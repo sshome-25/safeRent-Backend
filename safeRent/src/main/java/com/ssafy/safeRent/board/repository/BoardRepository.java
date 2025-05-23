@@ -29,9 +29,9 @@ public interface BoardRepository {
                         + "ELSE p.category = #{category} "
                         + "END " +
                         "GROUP BY p.post_id " +
-                        "ORDER BY p.created_at DESC " +
+                        "ORDER BY p.${orderBy} DESC " +
                         "LIMIT 10 OFFSET #{offset}")
-        List<Post> findPosts(@Param("offset") Integer offset, @Param("category") String category);
+        List<Post> findPosts(@Param("offset") Integer offset, @Param("category") String category, @Param("orderBy") String orderBy);
 
         // 2. 게시글 조회
         @Select("SELECT p.post_id, p.title, p.view_count, p.prefer_location, p.prefer_room_num, p.prefer_area, p.is_park, "
@@ -43,6 +43,9 @@ public interface BoardRepository {
                         "WHERE p.status = 'ACTIVE' AND p.post_id = #{postId} " +
                         "GROUP BY p.post_id")
         Post findPostById(Long postId);
+
+        @Update("UPDATE posts SET view_count = view_count + 1 WHERE post_id = #{postId}")
+        void increaseViewCount(Long postId);
 
         // 3. 게시글 등록
         @Insert("INSERT INTO posts (user_id, traded_house_id, title, content, prefer_location, prefer_room_num, " +
