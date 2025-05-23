@@ -81,7 +81,7 @@ public class AssessmentService {
 		return AssessResult.builder()
 				.isSafe(isSafe)
 				.assessmentHouseId(assessmentHouse.getId())
-				.aroundAvgPrice(statistic.getAvgPrice() )
+				.aroundAvgPrice(statistic.getAvgPrice())
 				.build();
 
 	}

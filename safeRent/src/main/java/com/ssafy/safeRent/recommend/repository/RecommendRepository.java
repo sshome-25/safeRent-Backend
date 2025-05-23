@@ -18,19 +18,35 @@ public interface RecommendRepository {
 
         // 1. 매물 목록 조회
         // 현재 중심위치 기준으로 반경 500m 이내에 있는, 3개월 이내의 매물을 선택
-        @Select("""
-            SELECT 
-                traded_house_id as id,
-                ST_X(location) as latitude,
-                ST_Y(location) as longitude,
-                price
-            FROM traded_houses 
-            WHERE ST_X(location) BETWEEN #{swLat} AND #{neLat}
-              AND ST_Y(location) BETWEEN #{swLng} AND #{neLng}
-            ORDER BY transaction_date DESC
-            LIMIT #{limit}
-        """)
-        List<House> selectTradedHouses(HouseListRequest request);
+		@Select("""
+		SELECT
+		    traded_house_id as id,
+		    ST_X(location) as latitude,   -- ST_Y가 일반적으로 latitude
+		    ST_Y(location) as longitude,  -- ST_X가 일반적으로 longitude
+		    price,
+		    area,
+		    floor,
+		    built_year,
+		    transaction_date,
+		    aptNm,
+		    aptDong,
+		    cityNm,
+		    umdNm,
+		    jibun
+		FROM traded_houses
+		WHERE ST_Contains(
+		    ST_GeomFromText(CONCAT('POLYGON((', 
+		        #{request.swLat}, ' ', #{request.swLng}, ',',
+		        #{request.neLat}, ' ', #{request.swLng}, ',',
+		        #{request.neLat}, ' ', #{request.neLng}, ',',
+		        #{request.swLat}, ' ', #{request.neLng}, ',',
+		        #{request.swLat}, ' ', #{request.swLng}, '))'), 4326),
+		    location
+		)
+		ORDER BY transaction_date DESC
+		LIMIT #{request.limit}
+		""")
+		List<House> selectTradedHouses(@Param("request") HouseListRequest request);
 
         // 2. 매물 상세 조회
         @Select("SELECT traded_house_id, CONCAT(aptNm, ' ', aptDong) AS name, "

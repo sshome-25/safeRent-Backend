@@ -24,6 +24,7 @@ public class RecommendService {
   // 1. 매물 목록 조회
   public HouseListResponse getHouseList(HouseListRequest request) {
     List<House> houseList = recommendRepository.selectTradedHouses(request);
+    System.out.println(houseList.get(0).getAptDong());
     return HouseListResponse.builder()
         .houseList(houseList)
         .build();
