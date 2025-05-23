@@ -15,22 +15,24 @@ import lombok.Setter;
 @Getter
 public class AssessmentResultResponse {
 	private Long id;
-	
+
+	private Long analysisId;
+
 	private Integer price;
-	
+
 	private Double area;
-	
+
 	private String address;
 	// 위도
 	private Double latitude;
 	// 경도
 	private Double longitude;
-	
+
 	private Boolean isSafe;
-	
+
 	private Integer marketPrice;
-	
+
 	private Integer floor;
-	
+
 	private LocalDateTime createdAt;
 }

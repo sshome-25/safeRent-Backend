@@ -7,10 +7,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
 import com.ssafy.safeRent.assessment.dto.model.HouseInfo;
 import com.ssafy.safeRent.assessment.dto.request.HouseInfoRequest;
 import com.ssafy.safeRent.assessment.dto.response.AssessmentResponse;
@@ -33,6 +35,13 @@ public class AssessmentController {
 	public ResponseEntity<?> getAssessment(@AuthenticationPrincipal User user) {
 		List<AssessmentResultResponse> results = assessmentService.getAssessResults(user.getId());
 		return ResponseEntity.ok().body(results);
+	}
+
+	@GetMapping("/analysis")
+	public ResponseEntity<?> getAnalysis(@AuthenticationPrincipal User user,
+			@RequestParam("analysis_id") Long analysisId) {
+		AssessmentResult ar = assessmentService.getAnalysisResults(analysisId);
+		return ResponseEntity.ok().body(ar);
 	}
 
 	// 비회원에 대한 평가 api
