@@ -65,25 +65,26 @@ FROM
     INFORMATION_SCHEMA.TABLES B
 LIMIT 95;
 
+
 -- 진단용 집 정보 삽입
-INSERT INTO assessment_houses (location, price, market_price, area, floor, sggCd, umdNm, jibun, cityNm, aptNm, aptDong, risk_degree)
+INSERT INTO assessment_houses (location, price, market_price, area, floor, address, is_safe)
 SELECT 
-    ST_GeomFromText(CONCAT('POINT(', (37.4 + RAND() * 0.3), ' ', (126.5 + RAND() * 1), ')'), 4326), -- 서울 지역 대략적인 좌표 범위
-    30000 + CEILING(RAND() * 100000), -- 3억~13억원 (만원 단위)
-    30000 + CEILING(RAND() * 100000), -- 3억~13억원 (만원 단위)
-    ROUND(40 + RAND() * 80, 1), -- 40~120 평수
-    CEILING(RAND() * 25), -- 1~25층
-    CONCAT('11', LPAD(CEILING(RAND() * 999), 3, '0')), -- 임의의 지역코드
-    ELT(CEILING(RAND() * 10), '강남구', '서초구', '송파구', '마포구', '영등포구', '용산구', '강서구', '성북구', '종로구', '중구'), -- 임의의 법정동
-    CONCAT(CEILING(RAND() * 999), '-', CEILING(RAND() * 99)), -- 임의의 지번
-    '서울시', -- 도시명
-    ELT(CEILING(RAND() * 10), '푸른아파트', '한강뷰', '스카이타워', '그랜드빌', '파크힐스', '시티뷰', '리버사이드', '센트럴파크', '골든게이트', '로얄팰리스'), -- 임의의 아파트 이름
-    CONCAT(CHAR(65 + CEILING(RAND() * 10) - 1), '동'), -- A~J동
-    0
+    ST_GeomFromText(CONCAT('POINT(', (37.4 + RAND() * 0.3), ' ', (126.5 + RAND() * 1), ')'), 4326),
+    30000 + CEILING(RAND() * 100000),
+    30000 + CEILING(RAND() * 100000),
+    ROUND(40 + RAND() * 80, 1),
+    CEILING(RAND() * 25),
+    CONCAT(
+        ELT(CEILING(RAND() * 10), '강남구', '서초구', '송파구', '마포구', '영등포구', '용산구', '강서구', '성북구', '종로구', '중구'),
+        ' ',
+        CEILING(RAND() * 999), '-', CEILING(RAND() * 99)
+    ),
+    IF(RAND() > 0.2, TRUE, FALSE) -- 80% 확률로 안전
 FROM 
     INFORMATION_SCHEMA.TABLES A,
     INFORMATION_SCHEMA.TABLES B
 LIMIT 100;
+
 
 -- 게시글 정보 삽입
 INSERT INTO posts (user_id, traded_house_id, title, content, view_count, prefer_location, prefer_room_num, prefer_area, is_park)
@@ -152,16 +153,27 @@ FROM
     INFORMATION_SCHEMA.TABLES A
 LIMIT 100;
 
--- 분석 정보 삽입
-INSERT INTO analysis (summary, risk_degree)
-SELECT 
-    CONCAT('이 거래는 ', 
-           ELT(CEILING(RAND() * 3), '일반적인 시세와 비슷합니다.', '시세보다 약간 높은 편입니다.', '시세보다 낮은 편입니다.'), 
-           ' 계약서 검토 결과 ', 
-           ELT(CEILING(RAND() * 3), '특별한 위험 요소는 발견되지 않았습니다.', '몇 가지 확인이 필요한 조항이 있습니다.', '주의가 필요한 내용이 포함되어 있습니다.')),
-    CEILING(RAND() * 10) -- 0~10 위험도
-FROM 
-    INFORMATION_SCHEMA.TABLES A
+-- 분석 정보 랜덤 데이터 100건 삽입
+INSERT INTO analysis (
+    overallAssessment,
+    riskFactor1,
+    solution1,
+    riskFactor2,
+    solution2
+)
+SELECT
+    CONCAT(
+        '이 거래는 ',
+        ELT(FLOOR(1 + (RAND() * 3)), '일반적인 시세와 비슷합니다.', '시세보다 약간 높은 편입니다.', '시세보다 낮은 편입니다.'),
+        ' 계약서 검토 결과 ',
+        ELT(FLOOR(1 + (RAND() * 3)), '특별한 위험 요소는 발견되지 않았습니다.', '몇 가지 확인이 필요한 조항이 있습니다.', '주의가 필요한 내용이 포함되어 있습니다.')
+    ) AS overallAssessment,
+    ELT(FLOOR(1 + (RAND() * 4)), '위험요소 없음', '근저당권 설정', '소유자 변경 이력 있음', '임차인 거주 불명확') AS riskFactor1,
+    ELT(FLOOR(1 + (RAND() * 4)), '별도의 해결방안 필요 없음', '근저당권 말소 확인 필요', '소유자 변경 사유 확인', '임차인 실거주 여부 확인') AS solution1,
+    ELT(FLOOR(1 + (RAND() * 4)), '추가 위험요소 없음', '전세권 설정', '가압류 존재', '권리관계 확인 필요') AS riskFactor2,
+    ELT(FLOOR(1 + (RAND() * 4)), '별도의 해결방안 필요 없음', '전세권 말소 확인 필요', '가압류 해소 필요', '권리관계 서류 확인 필요') AS solution2
+FROM
+    INFORMATION_SCHEMA.TABLES
 LIMIT 100;
 
 -- 계약서 정보 삽입
@@ -199,15 +211,15 @@ FROM
 LIMIT 100;
 
 -- 진단서 정보 삽입
-INSERT INTO assessments (completeness, user_id, contract_id, register_id, assessment_house_id)
+INSERT INTO assessments (
+    user_id,
+    register_id,
+    assessment_house_id
+)
 SELECT 
-    CEILING(RAND() * 100), -- 0~100% 완료도
     (SELECT user_id FROM users WHERE role_id != 1 ORDER BY RAND() LIMIT 1), -- 랜덤 일반 사용자
-    c.contract_id, -- 순서대로 계약서
     r.register_id, -- 순서대로 등본
     (SELECT assessment_house_id FROM assessment_houses ORDER BY RAND() LIMIT 1) -- 랜덤 진단 집
 FROM 
-    contracts c
-JOIN 
-    registers r ON c.analysis_id = r.analysis_id
+    registers r
 LIMIT 100;
