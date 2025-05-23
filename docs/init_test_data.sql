@@ -12,7 +12,7 @@ TRUNCATE TABLE comments;             -- users, posts, traded_houses 참조
 TRUNCATE TABLE posts;                -- users, traded_houses 참조
 TRUNCATE TABLE assessments;          -- contracts, registers, users 참조
 TRUNCATE TABLE registers;            -- users, traded_houses 참조
-TRUNCATE TABLE traded_houses;        -- users 참조
+# TRUNCATE TABLE traded_houses;        -- users 참조
 TRUNCATE TABLE users;                -- roles 참조
 TRUNCATE TABLE roles;                -- 최상위 부모
 
@@ -36,32 +36,32 @@ INSERT INTO users (user_id, email, password, nickname, role_id) VALUES
 (7, 'agent2@realestate.com', SHA2('agent123', 256), '최중개', 3);
 
 -- 거래된 집 정보 삽입
-INSERT INTO traded_houses (location, area, floor, built_year, transaction_date, price, sggCd, umdNm, jibun, cityNm, aptNm, aptDong) VALUES
-(ST_GeomFromText('POINT(37.56667 126.97806)', 4326), 84.2, 5, 2010, '2023-05-15', 85000, '11110', '종로구', '1-1', '서울시', '스카이뷰', 'A동'),
-(ST_GeomFromText('POINT(37.50722 127.04889)', 4326), 59.8, 10, 2015, '2023-06-10', 65000, '11680', '강남구', '102-3', '서울시', '한강파크', 'B동'),
-(ST_GeomFromText('POINT(37.55139 126.93694)', 4326), 76.3, 8, 2005, '2023-04-22', 70000, '11440', '마포구', '45-2', '서울시', '강변타워', 'C동'),
-(ST_GeomFromText('POINT(37.49361 127.02583)', 4326), 92.5, 12, 2018, '2023-07-05', 95000, '11680', '강남구', '523-1', '서울시', '블루힐스', 'A동'),
-(ST_GeomFromText('POINT(37.51278 126.89167)', 4326), 68.1, 7, 2012, '2023-03-30', 55000, '11410', '서대문구', '76-3', '서울시', '그린아파트', 'D동');
+# INSERT INTO traded_houses (location, area, floor, built_year, transaction_date, price, sggCd, umdNm, jibun, cityNm, aptNm, aptDong) VALUES
+# (ST_GeomFromText('POINT(37.56667 126.97806)', 4326), 84.2, 5, 2010, '2023-05-15', 85000, '11110', '종로구', '1-1', '서울시', '스카이뷰', 'A동'),
+# (ST_GeomFromText('POINT(37.50722 127.04889)', 4326), 59.8, 10, 2015, '2023-06-10', 65000, '11680', '강남구', '102-3', '서울시', '한강파크', 'B동'),
+# (ST_GeomFromText('POINT(37.55139 126.93694)', 4326), 76.3, 8, 2005, '2023-04-22', 70000, '11440', '마포구', '45-2', '서울시', '강변타워', 'C동'),
+# (ST_GeomFromText('POINT(37.49361 127.02583)', 4326), 92.5, 12, 2018, '2023-07-05', 95000, '11680', '강남구', '523-1', '서울시', '블루힐스', 'A동'),
+# (ST_GeomFromText('POINT(37.51278 126.89167)', 4326), 68.1, 7, 2012, '2023-03-30', 55000, '11410', '서대문구', '76-3', '서울시', '그린아파트', 'D동');
 
 -- 이후 95개 더 삽입
-INSERT INTO traded_houses (location, area, floor, built_year, transaction_date, price, sggCd, umdNm, jibun, cityNm, aptNm, aptDong)
-SELECT 
-    ST_GeomFromText(CONCAT('POINT(', (37.4 + RAND() * 0.3), ' ', (126.5 + RAND() * 1), ')'), 4326), -- 서울 지역 대략적인 좌표 범위
-    ROUND(40 + RAND() * 80, 1), -- 40~120 평수
-    CEILING(RAND() * 25), -- 1~25층
-    2000 + CEILING(RAND() * 23), -- 2000~2023년 준공
-    DATE_ADD('2022-01-01', INTERVAL CEILING(RAND() * 540) DAY), -- 2022-01-01부터 약 1년 6개월 내 거래
-    30000 + CEILING(RAND() * 100000), -- 3억~13억원 (만원 단위)
-    CONCAT('11', LPAD(CEILING(RAND() * 999), 3, '0')), -- 임의의 지역코드
-    ELT(CEILING(RAND() * 10), '강남구', '서초구', '송파구', '마포구', '영등포구', '용산구', '강서구', '성북구', '종로구', '중구'), -- 임의의 법정동
-    CONCAT(CEILING(RAND() * 999), '-', CEILING(RAND() * 99)), -- 임의의 지번
-    '서울시', -- 도시명
-    ELT(CEILING(RAND() * 10), '푸른아파트', '한강뷰', '스카이타워', '그랜드빌', '파크힐스', '시티뷰', '리버사이드', '센트럴파크', '골든게이트', '로얄팰리스'), -- 임의의 아파트 이름
-    CONCAT(CHAR(65 + CEILING(RAND() * 10) - 1), '동') -- A~J동
-FROM 
-    INFORMATION_SCHEMA.TABLES A,
-    INFORMATION_SCHEMA.TABLES B
-LIMIT 95;
+# INSERT INTO traded_houses (location, area, floor, built_year, transaction_date, price, sggCd, umdNm, jibun, cityNm, aptNm, aptDong)
+# SELECT
+#     ST_GeomFromText(CONCAT('POINT(', (37.4 + RAND() * 0.3), ' ', (126.5 + RAND() * 1), ')'), 4326), -- 서울 지역 대략적인 좌표 범위
+#     ROUND(40 + RAND() * 80, 1), -- 40~120 평수
+#     CEILING(RAND() * 25), -- 1~25층
+#     2000 + CEILING(RAND() * 23), -- 2000~2023년 준공
+#     DATE_ADD('2022-01-01', INTERVAL CEILING(RAND() * 540) DAY), -- 2022-01-01부터 약 1년 6개월 내 거래
+#     30000 + CEILING(RAND() * 100000), -- 3억~13억원 (만원 단위)
+#     CONCAT('11', LPAD(CEILING(RAND() * 999), 3, '0')), -- 임의의 지역코드
+#     ELT(CEILING(RAND() * 10), '강남구', '서초구', '송파구', '마포구', '영등포구', '용산구', '강서구', '성북구', '종로구', '중구'), -- 임의의 법정동
+#     CONCAT(CEILING(RAND() * 999), '-', CEILING(RAND() * 99)), -- 임의의 지번
+#     '서울시', -- 도시명
+#     ELT(CEILING(RAND() * 10), '푸른아파트', '한강뷰', '스카이타워', '그랜드빌', '파크힐스', '시티뷰', '리버사이드', '센트럴파크', '골든게이트', '로얄팰리스'), -- 임의의 아파트 이름
+#     CONCAT(CHAR(65 + CEILING(RAND() * 10) - 1), '동') -- A~J동
+# FROM
+#     INFORMATION_SCHEMA.TABLES A,
+#     INFORMATION_SCHEMA.TABLES B
+# LIMIT 95;
 
 
 -- 진단용 집 정보 삽입
@@ -85,26 +85,28 @@ LIMIT 100;
 
 
 -- 게시글 정보 삽입
-INSERT INTO posts (user_id, traded_house_id, title, content, view_count, prefer_location, prefer_room_num, prefer_area, is_park)
-SELECT 
+INSERT INTO posts (user_id, traded_house_id, title, content, view_count, prefer_location, prefer_room_num, prefer_area, is_park, category)
+SELECT
     (SELECT user_id FROM users ORDER BY RAND() LIMIT 1), -- 랜덤 사용자
     IF(RAND() > 0.3, (SELECT traded_house_id FROM traded_houses ORDER BY RAND() LIMIT 1), NULL), -- 70% 확률로 집과 연결
     CONCAT('집을 찾고 있어요 #', CEILING(RAND() * 100)), -- 제목
-    CONCAT('안녕하세요! 저는 ', 
-           ELT(CEILING(RAND() * 5), '신혼부부', '직장인', '학생', '부모님과 함께', '싱글라이프'), 
-           '로, ', 
-           ELT(CEILING(RAND() * 10), '강남구', '서초구', '송파구', '마포구', '영등포구', '용산구', '강서구', '성북구', '종로구', '중구'), 
-           '에 위치한 집을 찾고 있습니다. 예산은 ', 
+    CONCAT('안녕하세요! 저는 ',
+           ELT(CEILING(RAND() * 5), '신혼부부', '직장인', '학생', '부모님과 함께', '싱글라이프'),
+           '로, ',
+           ELT(CEILING(RAND() * 10), '강남구', '서초구', '송파구', '마포구', '영등포구', '용산구', '강서구', '성북구', '종로구', '중구'),
+           '에 위치한 집을 찾고 있습니다. 예산은 ',
            CEILING(RAND() * 10) * 1000, '만원 정도이고, 교통이 편리했으면 좋겠습니다.'), -- 내용
     CEILING(RAND() * 1000) + 1, -- 1~1000 조회수
     ELT(CEILING(RAND() * 10), '강남구', '서초구', '송파구', '마포구', '영등포구', '용산구', '강서구', '성북구', '종로구', '중구'), -- 선호 위치
     CEILING(RAND() * 4) + 1, -- 2~5 방 개수
     ROUND(40 + RAND() * 60, 1), -- 40~100 평수
-    ROUND(RAND()) -- 주차 여부
-FROM 
+    ROUND(RAND()), -- 주차 여부
+    ELT(CEILING(RAND() * 4), 'tips', 'scam', 'qa', 'review') -- 랜덤 카테고리
+FROM
     INFORMATION_SCHEMA.TABLES A,
     INFORMATION_SCHEMA.TABLES B
 LIMIT 100;
+
 
 -- 댓글 정보 삽입
 INSERT INTO comments (parent_comment_id, user_id, post_id, traded_house_id, content)
@@ -143,13 +145,13 @@ WHERE
 LIMIT 50;
 
 -- 즐겨찾기 정보 삽입
-INSERT INTO favorites (user_id, traded_house_id)
-SELECT 
-    (SELECT user_id FROM users WHERE role_id != 1 ORDER BY RAND() LIMIT 1), -- 랜덤 일반 사용자
-    (SELECT traded_house_id FROM traded_houses ORDER BY RAND() LIMIT 1) -- 랜덤 집
-FROM 
-    INFORMATION_SCHEMA.TABLES A
-LIMIT 100;
+# INSERT INTO favorites (user_id, traded_house_id)
+# SELECT
+#     (SELECT user_id FROM users WHERE role_id != 1 ORDER BY RAND() LIMIT 1), -- 랜덤 일반 사용자
+#     (SELECT traded_house_id FROM traded_houses ORDER BY RAND() LIMIT 1) -- 랜덤 집
+# FROM
+#     INFORMATION_SCHEMA.TABLES A
+# LIMIT 100;
 
 -- 분석 정보 랜덤 데이터 100건 삽입
 INSERT INTO analysis (
