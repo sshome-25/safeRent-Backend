@@ -67,7 +67,7 @@ public interface BoardRepository {
                         +
                         "c.post_id, c.user_id " +
                         "FROM comments c JOIN users ON users.user_id = c.user_id " +
-                        "WHERE c.post_id = #{postId}")
+                        "WHERE c.post_id = #{postId} and c.status = 'ACTIVE' ")
         List<Comment> findCommentsByPostId(Long postId);
 
         // 7. 댓글 등록
