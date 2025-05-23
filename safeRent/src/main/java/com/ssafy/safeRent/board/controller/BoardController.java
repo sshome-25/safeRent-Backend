@@ -36,8 +36,9 @@ public class BoardController {
 
   // 1. 게시글 목록 조회
   @GetMapping
-  public ResponseEntity<?> getPostList(@RequestParam("page") Integer page) {
-    PostListResponse postListResponse = boardService.getPostList(page);
+  public ResponseEntity<?> getPostList(@RequestParam("page") Integer page, @RequestParam("category") String category) {
+	System.out.println(category);
+    PostListResponse postListResponse = boardService.getPostList(page, category);
     return ResponseEntity.ok().body(postListResponse);
   }
 
@@ -82,6 +83,7 @@ public class BoardController {
   public ResponseEntity<?> createComment(@AuthenticationPrincipal User user,
       @Valid @RequestBody CommentRequest request) {
     boardService.createComment(user.getId(), request);
+    System.out.println("as");
     return ResponseEntity.ok("등록 완료");
   }
 

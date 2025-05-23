@@ -21,9 +21,9 @@ public class BoardService {
   private final BoardRepository boardRepository;
 
   // 1. 게시글 목록 조회
-  public PostListResponse getPostList(Integer page) {
+  public PostListResponse getPostList(Integer page, String category) {
     Integer offset = (page - 1) * 10; // 한 번에 보여줄 댓글 수 -> 10개
-    List<Post> postList = boardRepository.findPosts(offset);
+    List<Post> postList = boardRepository.findPosts(offset, category);
     return PostListResponse.builder()
         .postList(postList)
         .build();
@@ -51,6 +51,7 @@ public class BoardService {
         .preferArea(request.getPreferArea())
         .isPark(request.getIsPark())
         .commentCount(request.getCommentCount())
+        .category(request.getCategoryId())
         .build();
     boardRepository.insertPost(post);
   }

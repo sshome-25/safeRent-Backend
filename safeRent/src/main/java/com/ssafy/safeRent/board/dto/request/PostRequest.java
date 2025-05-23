@@ -34,4 +34,7 @@ public class PostRequest {
 
   @JsonProperty("traded_house_id")
   private Long tradedHouseId;
+  
+  @JsonProperty("category_id")
+  private String categoryId;
 }
