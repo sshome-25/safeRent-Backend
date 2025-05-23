@@ -49,4 +49,6 @@ public class Post {
 
   @JsonProperty("traded_house_id")
   private Long tradedHouseId; // 등록/수정 시 사용
+  
+  private String category;
 }

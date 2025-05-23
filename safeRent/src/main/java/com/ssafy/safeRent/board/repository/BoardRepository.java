@@ -23,11 +23,15 @@ public interface BoardRepository {
                         "p.traded_house_id " +
                         "FROM posts p JOIN users u ON p.user_id = u.user_id " +
                         "LEFT JOIN comments c ON p.post_id = c.post_id " +
-                        "WHERE p.status = 'ACTIVE' " +
+                        "WHERE p.status = 'ACTIVE' AND "
+                        + "CASE "
+                        + "WHEN #{category} = 'all' THEN TRUE "
+                        + "ELSE p.category = #{category} "
+                        + "END " +
                         "GROUP BY p.post_id " +
                         "ORDER BY p.created_at DESC " +
                         "LIMIT 10 OFFSET #{offset}")
-        List<Post> findPosts(Integer offset);
+        List<Post> findPosts(@Param("offset") Integer offset, @Param("category") String category);
 
         // 2. 게시글 조회
         @Select("SELECT p.post_id, p.title, p.view_count, p.prefer_location, p.prefer_room_num, p.prefer_area, p.is_park, "
@@ -42,9 +46,9 @@ public interface BoardRepository {
 
         // 3. 게시글 등록
         @Insert("INSERT INTO posts (user_id, traded_house_id, title, content, prefer_location, prefer_room_num, " +
-                        "prefer_area, is_park) " +
+                        "prefer_area, is_park, category) " +
                         "VALUES (#{userId}, #{tradedHouseId}, #{title}, #{content}, #{preferLocation}, " +
-                        "#{preferRoomNum}, #{preferArea}, #{isPark})")
+                        "#{preferRoomNum}, #{preferArea}, #{isPark}, #{category})")
         @Options(useGeneratedKeys = true, keyProperty = "postId")
         void insertPost(Post post);
 
