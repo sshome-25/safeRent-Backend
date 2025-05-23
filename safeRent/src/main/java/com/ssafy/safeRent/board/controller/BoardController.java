@@ -29,16 +29,16 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("api/boards")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST,
-    RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS }, allowCredentials = "true")
 public class BoardController {
 
   private final BoardService boardService;
 
   // 1. 게시글 목록 조회
   @GetMapping
-  public ResponseEntity<?> getPostList(@RequestParam("page") Integer page, @RequestParam("category") String category) {
-    PostListResponse postListResponse = boardService.getPostList(page, category);
+  public ResponseEntity<?> getPostList(@RequestParam("page") Integer page, @RequestParam("category") String category,
+      @RequestParam("order_by") String orderBy) {
+    System.out.println("category = " + category + ", orderBy = " + orderBy);
+    PostListResponse postListResponse = boardService.getPostList(page, category, orderBy);
     return ResponseEntity.ok().body(postListResponse);
   }
 

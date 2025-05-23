@@ -22,9 +22,9 @@ public class BoardService {
   private final BoardRepository boardRepository;
 
   // 1. 게시글 목록 조회
-  public PostListResponse getPostList(Integer page, String category) {
+  public PostListResponse getPostList(Integer page, String category, String orderBy) {
     Integer offset = (page - 1) * 10; // 한 번에 보여줄 댓글 수 -> 10개
-    List<Post> postList = boardRepository.findPosts(offset, category);
+    List<Post> postList = boardRepository.findPosts(offset, category, orderBy);
     return PostListResponse.builder()
         .postList(postList)
         .build();
@@ -33,6 +33,7 @@ public class BoardService {
   // 2. 게시글 조회
   public Post getPost(Long postId) {
     Post post = boardRepository.findPostById(postId);
+    boardRepository.increaseViewCount(postId);
     if (post == null) {
       throw new IllegalArgumentException("Post not found with ID: " + postId);
     }
