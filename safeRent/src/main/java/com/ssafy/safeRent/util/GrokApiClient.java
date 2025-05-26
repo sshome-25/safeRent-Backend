@@ -1,7 +1,5 @@
 package com.ssafy.safeRent.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,7 +11,9 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.safeRent.assessment.dto.model.AssessmentResult;
 
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -157,7 +157,7 @@ public class GrokApiClient {
 
 	private static String extractKeyValue(String content, String key) {
 
-		// 패턴: | key : | value |
+		// 패턴 1: | key : | value |
 		Pattern pattern = Pattern.compile("\\|\\s*" + key +
 				"\\s*:\\s*\\|\\s*([^|]+)\\s*\\|");
 		Matcher matcher = pattern.matcher(content);
@@ -165,16 +165,6 @@ public class GrokApiClient {
 		if (matcher.find()) {
 			System.out.println("[extractKeyValue] 패턴1 매칭됨: " + key);
 			return matcher.group(1).trim();
-		}
-
-		// 패턴: | key : value |
-		Pattern alternativePattern = Pattern.compile("\\|\\s*" + key +
-				"\\s*:\\s*([^|]+)\\s*\\|");
-		Matcher alternativeMatcher = alternativePattern.matcher(content);
-
-		if (alternativeMatcher.find()) {
-			System.out.println("[extractKeyValue] 패턴2 매칭됨: " + key);
-			return alternativeMatcher.group(1).trim();
 		}
 
 		// 패턴 3: | key : 종류 | value |
@@ -185,6 +175,16 @@ public class GrokApiClient {
 		if (thirdMatcher.find()) {
 			System.out.println("[extractKeyValue] 패턴3 매칭됨: " + key);
 			return thirdMatcher.group(1).trim();
+		}
+
+		// 패턴 2: | key : value |
+		Pattern alternativePattern = Pattern.compile("\\|\\s*" + key +
+				"\\s*:\\s*([^|]+)\\s*\\|");
+		Matcher alternativeMatcher = alternativePattern.matcher(content);
+
+		if (alternativeMatcher.find()) {
+			System.out.println("[extractKeyValue] 패턴2 매칭됨: " + key);
+			return alternativeMatcher.group(1).trim();
 		}
 
 		// 패턴 4: | key | value |
