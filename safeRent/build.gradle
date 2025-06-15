@@ -7,6 +7,7 @@ plugins {
     id 'pmd'         // pmdMain 태스크 사용 가능
     id 'jacoco'      // jacocoTestReport 태스크 사용 가능
     id 'com.github.spotbugs' version '5.0.13'  // spotbugsMain 태스크 사용 가능
+	id 'nu.studer.jooq' version '8.2.1'
 }
 
 checkstyle {
@@ -39,6 +40,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+	implementation 'org.springframework.boot:spring-boot-starter-jooq'
+	jooqGenerator 'com.mysql:mysql-connector-j'  // 🔥 JOOQ 코드 생성용
 	implementation 'software.amazon.awssdk:s3:2.20.123' // AWS S3
 	implementation 'software.amazon.awssdk:ec2:2.20.123' // AWS EC2
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
@@ -61,4 +64,29 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jooq {
+	configurations {
+		main {
+			generationTool {
+				jdbc {
+					driver = 'com.mysql.cj.jdbc.Driver'
+					url = 'jdbc:mysql://localhost:3306/safeRent'
+					user = 'root'
+					password = ''
+				}
+				generator {
+					database {
+						name = 'org.jooq.meta.mysql.MySQLDatabase'
+						inputSchema = 'safeRent'
+					}
+					target {
+						packageName = 'com.ssafy.safeRent.jooq.generated'
+						directory = 'src/generated/java'  // 🔥 안전한 디렉토리
+					}
+				}
+			}
+		}
+	}
 }
