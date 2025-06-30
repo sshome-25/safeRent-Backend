@@ -23,7 +23,7 @@ import com.ssafy.safeRent.user.repository.UserRepository;
 @MybatisTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE) // 실제 MySQL 데이터베이스 사용
-public class RepositoryTest {
+class RepositoryTest {
 
     @Autowired
     private UserRepository userRepository;

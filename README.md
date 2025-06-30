@@ -41,29 +41,35 @@ SafeRent는 전세사기 피해가 증가하는 상황에서, 임차인들이 �
 
 ### 사전 요구사항
 - Java (v8 이상)
-- Python (v3.8 이상)
 - Mysql (v8.0.37 이상)
 
 ### 설치 방법
 
 ```bash
 # 저장소 클론
-git clone https://github.com/username/saferent.git
-cd saferent
+git clone https://lab.ssafy.com/ssafy_13th_18class/999_final/ssafy_home_final_leeheegyeong_jungyeonsu.git
 
-# 의존성 설치
+# front 의존성 설치
+cd front
 npm install
-pip install -r requirements.txt
 
 # 환경 변수 설정
-cp .env.example .env
-# .env 파일에 필요한 API 키 및 데이터베이스 정보 입력
+# 아래의 application.properties를 safeRent/src/main/resources/ 아래에 추가
 
-# 데이터베이스 마이그레이션
-npm run migrate
-
-# 개발 서버 실행
+# front 서버 실행
+cd front
 npm run dev
+
+# back 서버 실행
+cd safeRent
+
+# db 세팅
+# 1. docs의 schema_setup.sql 실행
+# 2. docs의 traded_houses_dump.sql.gz 파일 압축 해제
+mysql -u [username] -p
+use safeRent;
+source [traded_houses_dump.sql path];
+
 ```
 
 ### 환경 변수 설정(application.properties)
@@ -117,36 +123,8 @@ mybatis.configuration.map-underscore-to-camel-case=true
 2. 게시글 작성 및 댓글 참여
 3. 전문가 상담 예약
 
-## 📊 주요 지표
-
-- 🎯 **매물 분석 정확도**: 95% 이상
-- ⚡ **분석 처리 시간**: 평균 30초 이내
-- 👥 **월간 활성 사용자**: 10,000명+
-- 📈 **사기 예방 건수**: 500건+
-
 ### 개발 가이드라인
 - 코드 스타일: ESLint + Prettier 설정 준수
 
 ---
 
-💡 **SafeRent와 함께 안전한 전세 생활을 시작하세요!**
-
-
-# Branch 전략
-
-1. 우리 팀은 두개의 원격저장소를 활용합니다.
-2. github 기준 최신의 프로젝트를 만들어 gitlab에 한번에 올립니다.
-3. 초기 세팅
-    ```
-        1. github 기준 clone
-        2. git remote add gitlab <gitlab url>
-    ```
-4. github의 main에 최신의 코드가 모두 머지되면, 이를 gitlab master로 넘깁니다.
-    ```
-        git checkout master
-        git merge origin/main --allow-unrelated-histories  
-    ```
-
-5. develop 으로 부터 개발을 한 후 develop에서 모아서 main에 넣습니다.
-6. branch name은 <개발자 이름>/<개발자가 설정한 기능이름>
-7. 해당 개발이 어떤 개발인지는 pr 요청시의 title에 잘 들어나게만 작성해주시면 됩니다.
