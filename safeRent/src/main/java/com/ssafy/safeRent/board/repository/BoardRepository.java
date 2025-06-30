@@ -38,7 +38,8 @@ public interface BoardRepository {
                         +
                         "p.content, p.created_at, u.nickname AS authorNickname, COUNT(c.comment_id) AS commentCount, p.user_id "
                         +
-                        "FROM posts p JOIN users u ON p.user_id = u.user_id " +
+                        "FROM posts p " +
+                        "JOIN users u ON p.user_id = u.user_id " +
                         "LEFT JOIN comments c ON p.post_id = c.post_id " +
                         "WHERE p.status = 'ACTIVE' AND p.post_id = #{postId} " +
                         "GROUP BY p.post_id")
